@@ -40,7 +40,23 @@ npm run preview -- --port 4173
 npm run preview -- --port 4174 --base /FAD
 ```
 
-The source and build both use the same structure: `index.html`, `src/`, `public/`, and `.nojekyll`. The Manrope font and its licence are in `public/fonts/`.
+The source and build both use the same structure: `index.html`, `src/`, `public/`, and `.nojekyll`. Typography uses locally hosted Inter and a PP Editorial New-first display-font stack. See the font note below.
+
+## Typography and design
+
+The website is organised around one repeatable Type 36 design and a defined specification for mass-scale development. The standard-home section includes exterior selection, an illustrative room-zoning view, and the material/component specification from the commercial deck. The floor plan is a concept for discussion, not an approved construction drawing.
+
+Inter is included locally with its open-source licence. **PP Editorial New is the requested display font**, but its licensed webfont has not been supplied. Newsreader is included as a temporary open-source preview fallback. It is not presented as PP Editorial New.
+
+To activate the exact display font:
+
+1. Obtain the appropriate PP Editorial New web licence and font file.
+2. Place the regular webfont at `public/fonts/PPEditorialNew-Regular.woff2`.
+3. Uncomment the `@font-face` rule in `public/fonts/editorial.css`.
+
+The site's display-font stack already prioritises PP Editorial New, and `editorial.css` is loaded by `index.html`. A locally installed PP Editorial New font can also be used by the browser. Until a licensed webfont is supplied, visitors see Newsreader.
+
+Design references requested: https://www.amoda.id/ and https://foxmodular.com.au/home-designs/. Their page content was reviewed, and Fox Modular's home-design page was captured in the browser. FAD uses the reference patterns of broad architectural imagery, clean navigation, visible home specifications, and a consultation-led journey. Amoda's external asset hosts remain blocked in the current runtime, limiting its visual review. Reference photography, fonts, project claims, and proprietary assets were not copied.
 
 ## Lead enquiries
 
@@ -64,6 +80,6 @@ npx playwright install chromium
 npm test
 ```
 
-The same functional tests run against the raw static source and the static build at `/FAD/`. They cover language switching, preference persistence, form input preservation, government enquiries, mandatory fields, the WhatsApp brief, calculator boundaries, all exterior images, PDF availability, and desktop/tablet/mobile layouts. Tests do not send enquiries.
+The same functional tests run against the raw static source and the static build at `/FAD/`. They cover language switching, preference persistence, form input preservation, government enquiries, mandatory fields, the WhatsApp brief, calculator boundaries, all exterior images, keyboard-accessible design-view tabs, bilingual specifications, font loading, PDF availability, and desktop/tablet/mobile layouts. Tests do not send enquiries.
 
 Each cloud task is already isolated. Use this checkout; do not create a Git worktree unless explicitly requested.

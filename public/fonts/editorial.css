@@ -1,0 +1,13 @@
+/* PP Editorial New is a licensed font, not included in this repository.
+   After obtaining the web licence and adding PPEditorialNew-Regular.woff2 here,
+   uncomment the rule below. The entire site already prioritises this family.
+   Newsreader is the temporary open-source preview fallback. */
+/*
+@font-face {
+  font-family: 'PP Editorial New';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./PPEditorialNew-Regular.woff2') format('woff2');
+}
+*/

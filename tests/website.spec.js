@@ -5,7 +5,7 @@ test('language switching translates the page, preserves input, and survives relo
   await page.locator('[name=name]').fill('Project Partner');
   await page.getByRole('button', { name: 'Bahasa Indonesia', exact: true }).click();
   await expect(page.locator('html')).toHaveAttribute('lang', 'id');
-  await expect(page.locator('h1')).toContainText('Hunian lebih baik.');
+  await expect(page.locator('h1')).toContainText('Satu standar.');
   await expect(page.locator('.form-submit')).toContainText('Siapkan pertanyaan proyek');
   await expect(page.locator('[name=sector] option[value=sectorGov]')).toHaveText('Program perumahan pemerintah');
   await expect(page.locator('[name=name]')).toHaveValue('Project Partner');
@@ -75,7 +75,7 @@ for (const width of [320, 390, 768, 1440]) {
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.goto('./');
-    expect(await page.evaluate(async () => (await document.fonts.load('16px "Manrope Variable"')).length)).toBe(1);
+    expect(await page.evaluate(async () => (await document.fonts.load('16px "Inter"')).length)).toBe(1);
     await page.evaluate(() => { document.querySelectorAll('img').forEach(img => img.loading = 'eager'); });
     await expect.poll(() => page.evaluate(() => [...document.images].every(img => img.complete && img.naturalWidth > 0))).toBe(true);
     for (const language of ['English', 'Bahasa Indonesia']) {
@@ -86,7 +86,7 @@ for (const width of [320, 390, 768, 1440]) {
       expect(overflow).toEqual([]);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     }
-    if (width <= 760) {
+    if (width <= 960) {
       await page.locator('.menu-toggle').click();
       await expect(page.locator('#mobile-nav')).toBeVisible();
       await page.locator('#mobile-nav a[href="#contact"]').click();
@@ -95,3 +95,23 @@ for (const width of [320, 390, 768, 1440]) {
     expect(errors).toEqual([]);
   });
 }
+
+test('standard-home views show the plan and specification with keyboard and bilingual support', async ({ page }) => {
+  await page.goto('./');
+  await page.getByRole('tab', { name: 'Floor plan', exact: true }).click();
+  await expect(page.locator('#view-plan')).toBeVisible();
+  await expect(page.locator('#view-exterior')).not.toBeVisible();
+  await expect(page.locator('#view-plan')).toContainText('Illustrative zoning');
+  await page.keyboard.press('ArrowRight');
+  await expect(page.getByRole('tab', { name: 'Standard specification', exact: true })).toBeFocused();
+  await expect(page.locator('#view-specification')).toBeVisible();
+  await expect(page.locator('#view-specification')).toContainText('10 primary composite panels');
+  await page.getByRole('button', { name: 'Bahasa Indonesia', exact: true }).click();
+  await expect(page.getByRole('tab', { name: 'Spesifikasi standar', exact: true })).toHaveAttribute('aria-selected', 'true');
+  await expect(page.locator('#view-specification')).toContainText('Fondasi');
+  await page.getByRole('tab', { name: 'Denah', exact: true }).click();
+  await expect(page.locator('#view-plan')).toContainText('Kamar tidur 01');
+  await page.keyboard.press('Home');
+  await expect(page.getByRole('tab', { name: 'Eksterior', exact: true })).toBeFocused();
+  await expect(page.locator('#finish-controls')).toBeVisible();
+});
