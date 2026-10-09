@@ -5,7 +5,7 @@ test('language switching translates the page, preserves input, and survives relo
   await page.locator('[name=name]').fill('Project Partner');
   await page.getByRole('button', { name: 'Bahasa Indonesia', exact: true }).click();
   await expect(page.locator('html')).toHaveAttribute('lang', 'id');
-  await expect(page.locator('h1')).toContainText('Satu standar.');
+  await expect(page.locator('h1')).toContainText('Bangun lebih cerdas.');
   await expect(page.locator('.form-submit')).toContainText('Siapkan pertanyaan proyek');
   await expect(page.locator('[name=sector] option[value=sectorGov]')).toHaveText('Program perumahan pemerintah');
   await expect(page.locator('[name=name]')).toHaveValue('Project Partner');
@@ -114,4 +114,20 @@ test('standard-home views show the plan and specification with keyboard and bili
   await page.keyboard.press('Home');
   await expect(page.getByRole('tab', { name: 'Eksterior', exact: true })).toBeFocused();
   await expect(page.locator('#finish-controls')).toBeVisible();
+});
+
+test('the website leads with multiple solutions and uses Inter throughout', async ({ page }) => {
+  await page.goto('./');
+  await expect(page.locator('.hero')).not.toContainText('Type 36');
+  await expect(page.locator('#applications')).toContainText('Housing & residential');
+  await expect(page.locator('#applications')).toContainText('Education & learning');
+  await expect(page.locator('#applications')).toContainText('Dormitories & accommodation');
+  expect(await page.evaluate(() => Boolean(document.querySelector('#applications').compareDocumentPosition(document.querySelector('#solution')) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
+  expect(await page.evaluate(() => [...document.querySelectorAll('body *')].map(el => getComputedStyle(el).fontFamily.split(',')[0].trim().replaceAll('"', '')).filter(font => font !== 'Inter'))).toEqual([]);
+  await page.locator('[data-project=sectorEdu]').click();
+  await expect(page.locator('[name=sector]')).toHaveValue('sectorEdu');
+  await expect(page.locator('#budget')).toContainText('This estimate applies only');
+  await page.getByRole('button', { name: 'Bahasa Indonesia', exact: true }).click();
+  await expect(page.locator('.hero')).not.toContainText('Tipe 36');
+  await expect(page.locator('#applications')).toContainText('Pendidikan & pembelajaran');
 });

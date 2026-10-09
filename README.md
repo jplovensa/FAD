@@ -1,6 +1,6 @@
 # Fjäll Affordable Development
 
-A responsive English / Bahasa Indonesia website for Fjäll Group's mass housing product. Built with plain HTML, CSS, browser-native JavaScript modules, and locally hosted fonts. No framework, bundler, compilation, API keys, or production npm packages are needed. Content and images come from the supplied commercial deck.
+A responsive English / Bahasa Indonesia website for Fjäll Group's mass-scale development product. Built with plain HTML, CSS, browser-native JavaScript modules, and locally hosted fonts. No framework, bundler, compilation, API keys, or production npm packages are needed. Content and images come from the supplied commercial deck.
 
 ## GitHub Pages
 
@@ -40,23 +40,17 @@ npm run preview -- --port 4173
 npm run preview -- --port 4174 --base /FAD
 ```
 
-The source and build both use the same structure: `index.html`, `src/`, `public/`, and `.nojekyll`. Typography uses locally hosted Inter and a PP Editorial New-first display-font stack. See the font note below.
+The source and build both use the same structure: `index.html`, `src/`, `public/`, and `.nojekyll`. All typography uses locally hosted Inter.
 
 ## Typography and design
 
-The website is organised around one repeatable Type 36 design and a defined specification for mass-scale development. The standard-home section includes exterior selection, an illustrative room-zoning view, and the material/component specification from the commercial deck. The floor plan is a concept for discussion, not an approved construction drawing.
+All typography is locally hosted **Inter**, including headings, body text, controls, diagrams, and enquiry dialogs. Inter's open-source licence is in `public/fonts/`. No serif font or licensed font file is required.
 
-Inter is included locally with its open-source licence. **PP Editorial New is the requested display font**, but its licensed webfont has not been supplied. Newsreader is included as a temporary open-source preview fallback. It is not presented as PP Editorial New.
+FAD is presented as a scalable building solution for residential housing, educational facilities, and accommodation. The site follows Amoda's solution-first structure, broad architectural hero, consultation calls to action, rounded cards, and project process. Photography and specifications come from the supplied Fjäll deck, not from Amoda.
 
-To activate the exact display font:
+Type 36 is a documented reference example, not the entire FAD offering. Its exterior choices, illustrative room-zoning diagram, material specification, and calculator remain available further down the page. The calculator's Rp 50 million unit value applies only to this 36 m² reference home. Other configurations and uses require their own project specification and proposal. The floor plan is a discussion illustration, not an approved construction drawing.
 
-1. Obtain the appropriate PP Editorial New web licence and font file.
-2. Place the regular webfont at `public/fonts/PPEditorialNew-Regular.woff2`.
-3. Uncomment the `@font-face` rule in `public/fonts/editorial.css`.
-
-The site's display-font stack already prioritises PP Editorial New, and `editorial.css` is loaded by `index.html`. A locally installed PP Editorial New font can also be used by the browser. Until a licensed webfont is supplied, visitors see Newsreader.
-
-Design references requested: https://www.amoda.id/ and https://foxmodular.com.au/home-designs/. Their page content was reviewed, and Fox Modular's home-design page was captured in the browser. FAD uses the reference patterns of broad architectural imagery, clean navigation, visible home specifications, and a consultation-led journey. Amoda's external asset hosts remain blocked in the current runtime, limiting its visual review. Reference photography, fonts, project claims, and proprietary assets were not copied.
+Design reference: https://www.amoda.id/. Its page content was reviewed; external media asset access in the cloud environment is restricted. No third-party project claims, customer counts, or proprietary reference assets are copied.
 
 ## Lead enquiries
 
@@ -64,7 +58,7 @@ The form qualifies enquiries by organisation, location, project type, number of 
 
 This is a WhatsApp enquiry workflow, not a CRM/database integration. Contact routing is in `src/main.js`. Both language versions are in `src/content.js`. The bilingual privacy explanation is in the footer.
 
-The calculator uses the deck's indicative Rp 50 million base unit value. Assembly time refers to superstructure assembly, not full project completion. Images are concepts, not completed projects. Final prices, scope, engineering suitability, certifications, procurement qualifications, and delivery commitments require project-specific confirmation. The commercial deck is available at `public/fjall-commercial-deck.pdf`.
+The calculator uses the deck's indicative Rp 50 million value only for the Type 36 reference home. Assembly time refers to superstructure assembly, not full project completion. Images are concepts, not completed projects. Final prices, scope, engineering suitability, certifications, procurement qualifications, and delivery commitments require project-specific confirmation. The commercial deck is available at `public/fjall-commercial-deck.pdf`.
 
 ## Browser tests
 
