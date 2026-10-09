@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 // Other flow checks bypass the optional introduction; dedicated tests cover it.
-test.beforeEach(async ({ page }, testInfo) => { if (testInfo.title.startsWith('video intro')) return; await page.addInitScript(() => sessionStorage.setItem('fad-intro-seen', '1')); });
+test.beforeEach(async ({ page }, testInfo) => { if (testInfo.title.startsWith('video intro')) return; await page.emulateMedia({reducedMotion:'reduce'}); });
 
 test('language switching translates the page, preserves input, and survives reload', async ({ page }) => {
   await page.goto('./');
@@ -143,27 +143,21 @@ test('brand assets and video load, pricing is project specific', async ({page, r
  for (const path of ['public/brand/fad-mark.svg','public/brand/fjall-group.png','public/video/fad-opening.mp4']) expect((await request.get('./'+path)).ok()).toBe(true);
  await expect(page.locator('.brand-film video')).toHaveAttribute('controls','');
 });
-test('video intro is skippable and only shown once per session', async ({page}) => {
- await page.goto('./');
- await page.evaluate(()=>sessionStorage.removeItem('fad-intro-seen'));
- await page.addInitScript(() => { if (!sessionStorage.getItem('intro-test-started')) { sessionStorage.removeItem('fad-intro-seen'); sessionStorage.setItem('intro-test-started','1'); } });
- await page.reload();
- await expect(page.locator('.video-intro')).toBeVisible();
- await expect(page.locator('#app')).toHaveJSProperty('inert', true);
- await page.locator('.intro-skip').click();
- await expect(page.locator('.video-intro')).toHaveCount(0);
- await expect(page.locator('#app')).toHaveJSProperty('inert', false);
- await page.reload();
- await expect(page.locator('.video-intro')).toHaveCount(0);
+test('video intro fills the screen, can be skipped, and replays on refresh', async ({page}) => {
+ await page.goto('./');await expect(page.locator('.video-intro')).toBeVisible();
+ await expect(page.locator('#app')).toHaveJSProperty('inert',true);
+ expect(await page.locator('.video-intro video').evaluate(el=>getComputedStyle(el).objectFit)).toBe('cover');
+ const bounds=await page.locator('.video-intro').boundingBox();const viewport=page.viewportSize();expect(bounds.width).toBe(viewport.width);expect(bounds.height).toBe(viewport.height);
+ await page.locator('.intro-skip').click();await expect(page.locator('.video-intro')).toHaveCount(0);await expect(page.locator('#app')).toHaveJSProperty('inert',false);
+ await page.reload();await expect(page.locator('.video-intro')).toBeVisible();await page.keyboard.press('Escape');await expect(page.locator('.video-intro')).toHaveCount(0);
 });
 test('reduced motion bypasses the intro', async ({page}) => {
  await page.emulateMedia({reducedMotion:'reduce'});
- await page.goto('./'); await page.evaluate(()=>sessionStorage.removeItem('fad-intro-seen')); await page.reload();
+ await page.goto('./'); await page.reload();
  await expect(page.locator('.video-intro')).toHaveCount(0);
 });
 test('video intro closes automatically if the visitor does not skip', async ({page}) => {
  await page.goto('./');
- await page.evaluate(()=>sessionStorage.removeItem('fad-intro-seen'));
  await page.reload();
  await expect(page.locator('.video-intro')).toBeVisible();
  await expect(page.locator('.video-intro')).toHaveCount(0, {timeout:6500});
@@ -208,4 +202,23 @@ test('architectural icons render through WebGL and retain a no-WebGL fallback', 
  await page.addInitScript(()=>{const original=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(type,...args){return type==='webgl'||type==='webgl2'?null:original.call(this,type,...args);};});
  await page.reload();await expect(page.locator('.metrics .spatial-fallback').first()).toBeVisible();
  await expect(page.locator('[data-rendered=webgl]')).toHaveCount(0);
+});
+
+test('government form qualifies and reviews a bilingual public-sector enquiry',async({page})=>{
+ await page.goto('./');await expect(page.locator('#technology')).toHaveCount(0);await expect(page.locator('a[href="#technology"]')).toHaveCount(0);
+ await page.locator('[data-government-use=govEducation]').click();await expect(page.locator('[name=govProgramme]')).toHaveValue('govEducation');
+ await page.locator('.government-submit').click();await expect(page.locator('#review-dialog')).not.toBeVisible();
+ const fields={govName:'Public Partner',govAgency:'Dinas Pendidikan',govEmail:'partner@example.go.id',govPhone:'+628123456789',govLocation:'Bandung',govScale:'20 classrooms',govFunding:'Public capital programme',govNote:'Need drawings & site review <before> procurement.'};
+ for(const[name,value]of Object.entries(fields))await page.locator(`[name=${name}]`).fill(value);
+ await page.locator('[name=govStage]').selectOption('govTender');await page.locator('[name=govTimeline]').selectOption('timeline3');await page.locator('[name=govLand]').selectOption('govSiteReady');await page.locator('[name=govYear]').fill('2027');await page.locator('[name=govConsent]').check();
+ await page.getByRole('button',{name:'Bahasa Indonesia',exact:true}).click();await expect(page.locator('[name=govAgency]')).toHaveValue('Dinas Pendidikan');
+ await page.locator('.government-submit').click();await expect(page.locator('#review-dialog')).toBeVisible();await expect(page.locator('#project-brief')).toContainText('PERTANYAAN PROYEK PEMERINTAH');await expect(page.locator('#project-brief')).toContainText('Sekolah & pendidikan');await expect(page.locator('#project-brief')).toContainText('Persiapan pengadaan / tender');
+ const url=new URL(await page.locator('#send-whatsapp').getAttribute('href'));expect(url.origin+url.pathname).toBe('https://wa.me/6281237535508');expect(url.searchParams.get('text')).toContain(fields.govNote);expect(url.searchParams.get('text')).toContain('2027');expect(await page.locator('#project-brief script').count()).toBe(0);
+ await page.keyboard.press('Escape');await expect(page.locator('[name=govScale]')).toHaveValue('20 classrooms');
+});
+test('government phone validation rejects non-phone input',async({page})=>{
+ await page.goto('./');await page.locator('[name=govPhone]').fill('abcdefghi');expect(await page.locator('[name=govPhone]').evaluate(el=>el.checkValidity())).toBe(false);await page.locator('[name=govPhone]').fill('+62812345678');expect(await page.locator('[name=govPhone]').evaluate(el=>el.checkValidity())).toBe(true);
+});
+test('video intro chooses the portrait film on mobile',async({page})=>{
+ await page.setViewportSize({width:390,height:844});await page.goto('./');await expect(page.locator('.video-intro source')).toHaveAttribute('src','./public/video/fad-opening-portrait.mp4');await expect(page.locator('.video-intro')).toBeVisible();await page.locator('.intro-skip').click();await expect(page.locator('.video-intro')).toHaveCount(0);
 });

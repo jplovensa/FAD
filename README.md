@@ -1,6 +1,6 @@
 # Fjäll Affordable Development
 
-A responsive English / Bahasa Indonesia website for Fjäll Group's mass-scale development product. Built with plain HTML, CSS, browser-native JavaScript modules, and locally hosted fonts. No framework, bundler, compilation, API keys, or production npm packages are needed. Reference product specifications come from the supplied commercial deck. Updated architectural visuals are AI-enhanced or AI-generated concepts, and the opening animation is authored for FAD.
+A responsive English / Bahasa Indonesia website for Fjäll Group's mass-scale development product. Built with plain HTML, CSS, browser-native JavaScript modules, and locally hosted fonts. No framework, bundler, compilation, API keys, or production npm packages are needed. Reference product specifications come from the supplied commercial deck. Updated architectural visuals are AI-enhanced or AI-generated concepts, and the opening film uses a realistic architectural image montage.
 
 ## GitHub Pages
 
@@ -54,7 +54,7 @@ Design reference: https://www.amoda.id/. Its page content was reviewed; external
 
 ## Lead enquiries
 
-The form qualifies enquiries by organisation, location, project type, number of units, timeline, and additional requirements. It validates required fields and consent, then shows a project brief. Visitors continue to WhatsApp and send the prepared message to **+62 812 3753 5508**, the contact number in the deck. Messages are not automatically sent. No enquiry data is stored by this website. The language preference is stored locally, and the introduction-seen flag is kept for the tab session.
+The form qualifies enquiries by organisation, location, project type, number of units, timeline, and additional requirements. It validates required fields and consent, then shows a project brief. Visitors continue to WhatsApp and send the prepared message to **+62 812 3753 5508**, the contact number in the deck. Messages are not automatically sent. No enquiry data is stored by this website. Only the language preference is stored locally; the opening film replays on each page load and refresh.
 
 This is a WhatsApp enquiry workflow, not a CRM/database integration. Contact routing is in `src/main.js`. Both language versions are in `src/content.js`. The bilingual privacy explanation is in the footer.
 
@@ -83,7 +83,7 @@ Each cloud task is already isolated. Use this checkout; do not create a Git work
 
 The complete logo is `public/brand/fad-logo.svg`, with embedded Inter for consistent export. FAD’s modular symbol is supplied as `public/brand/fad-mark.svg` and the group logo as `public/brand/fjall-group.png` (the matching asset from the group website). The palette follows Fjäll Group forest green `#193a32`, teal `#398780`, and GreenShift mint `#a1e5cf`, with `#f5f4ed` paper. Typography remains locally hosted Inter.
 
-A new FAD film, authored from modular WebGL geometry, is hosted locally at `public/video/fad-opening.mp4` (1280 × 720, approximately 4.2 seconds, about 606 KB). It shows separated panels assembling into one building and repeating across a site. The original group trailer is retained as a source asset. The optional muted introduction lasts at most 4.5 seconds, supports immediate skip / Escape, restores focus, and runs once per tab session. Reduced motion, data saving, autoplay rejection, and video failure bypass it. The page never depends on loading the video. The complete concept film has playback controls within the page.
+The opening film uses realistic architectural concept imagery with gentle camera movement: homes, workforce accommodation, schools, and healthcare facilities. `public/video/fad-opening.mp4` is the landscape version and `public/video/fad-opening-portrait.mp4` is the mobile portrait version. Both run about 5.7 seconds. The video covers the entire viewport and replays on every page load or refresh. Skip / Escape, focus restoration, reduced motion, data saving, autoplay failure, and video failure are handled. A 6-second timeout guarantees the page does not wait for video download or playback. The same landscape film has playback controls within the page. Images remain clearly labeled as illustrative concepts, not completed-project footage.
 
 Copy describes project-specific planning, build coordination, and phased programmes. Applications are reviewed around the brief; no completed projects, certifications, or fixed delivery commitments are implied.
 
@@ -94,4 +94,9 @@ Worker accommodation, schools, and hospital/healthcare campuses each use the Typ
 
 `src/webgl.js` renders architectural symbols with one shared WebGL context, then composites the result into each visible icon canvas. It only animates visible icons, caps updates around 15 fps, pauses in hidden tabs, and renders statically for reduced motion. The FAD vector mark remains visible when WebGL is unavailable or its context is lost. Navigation and action controls retain clear conventional symbols.
 
-To regenerate the opening movie, run the dev server on port 5173 and execute `node scripts/video/render-opening.mjs` with Chromium and FFmpeg installed. These tools are for authoring only; GitHub Pages serves the already rendered MP4 without a build dependency.
+To regenerate both opening movies, execute `node scripts/video/render-opening.mjs` with Node and FFmpeg installed. These tools are for authoring only; GitHub Pages serves the already rendered MP4 without a build dependency.
+
+
+### Government programme enquiries
+
+The former building technology section is removed. Navigation now links to the government programme section. Its dedicated form captures contact and agency, project location, programme type, target capacity, planning/procurement stage, and delivery timeline, with optional land status, fiscal year, funding context, and document requirements. Programme cards preselect the government use case. Required fields, phone validation, and consent protect enquiry quality. A reviewed, safely encoded WhatsApp brief follows the existing user-controlled send workflow; no backend or CRM is implied. The form supports English and Bahasa Indonesia and preserves input on language switching.
