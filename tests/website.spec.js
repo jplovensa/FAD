@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('language switching translates the page, preserves input, and survives reload', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('./');
   await page.locator('[name=name]').fill('Project Partner');
   await page.getByRole('button', { name: 'Bahasa Indonesia', exact: true }).click();
   await expect(page.locator('html')).toHaveAttribute('lang', 'id');
@@ -14,7 +14,7 @@ test('language switching translates the page, preserves input, and survives relo
 });
 
 test('government CTA qualifies the project and required fields prevent an empty enquiry', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('./');
   await page.locator('[data-project=sectorGov]').click();
   await expect(page.locator('[name=sector]')).toHaveValue('sectorGov');
   await page.locator('.form-submit').click();
@@ -23,7 +23,7 @@ test('government CTA qualifies the project and required fields prevent an empty 
 });
 
 test('budget calculation updates and carries the unit count into the enquiry', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('./');
   await page.getByRole('button', { name: '500', exact: true }).click();
   await expect(page.locator('#budget-total')).toHaveText('Rp 25,000,000,000');
   await page.locator('#budget-enquiry').click();
@@ -35,7 +35,7 @@ test('budget calculation updates and carries the unit count into the enquiry', a
 });
 
 test('a complete enquiry produces a review and an encoded WhatsApp brief without sending', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('./');
   await page.getByRole('button', { name: 'Bahasa Indonesia', exact: true }).click();
   const fields = { name: 'Test Partner', org: 'Sample Housing Agency', email: 'partner@example.com', phone: '+628123456789', location: 'Bandung, Jawa Barat', units: '500', message: 'Need technical documents & site review <before> procurement.' };
   for (const [name, value] of Object.entries(fields)) await page.locator(`[name=${name}]`).fill(value);
@@ -56,15 +56,15 @@ test('a complete enquiry produces a review and an encoded WhatsApp brief without
 });
 
 test('exterior selection loads the matching image and the deck download is available', async ({ page, request }) => {
-  await page.goto('/');
+  await page.goto('./');
   for (const [name, image] of [['Earthy brown', 'brown'], ['Golden yellow', 'yellow'], ['Royal purple', 'purple'], ['Olive green', 'olive']]) {
     const button = page.getByRole('button', { name, exact: true });
     await button.click();
     await expect(button).toHaveAttribute('aria-pressed', 'true');
-    await expect(page.locator('#product-image')).toHaveAttribute('src', `/images/home-${image}.jpg`);
+    await expect(page.locator('#product-image')).toHaveAttribute('src', `./public/images/home-${image}.jpg`);
     await expect.poll(() => page.locator('#product-image').evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
   }
-  const response = await request.get('/fjall-commercial-deck.pdf');
+  const response = await request.get('./public/fjall-commercial-deck.pdf');
   expect(response.ok()).toBe(true);
   expect(response.headers()['content-type']).toContain('application/pdf');
 });
@@ -74,7 +74,8 @@ for (const width of [320, 390, 768, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
-    await page.goto('/');
+    await page.goto('./');
+    expect(await page.evaluate(async () => (await document.fonts.load('16px "Manrope Variable"')).length)).toBe(1);
     await page.evaluate(() => { document.querySelectorAll('img').forEach(img => img.loading = 'eager'); });
     await expect.poll(() => page.evaluate(() => [...document.images].every(img => img.complete && img.naturalWidth > 0))).toBe(true);
     for (const language of ['English', 'Bahasa Indonesia']) {
