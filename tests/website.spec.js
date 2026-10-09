@@ -101,21 +101,21 @@ for (const width of [320, 390, 768, 1440]) {
 
 test('standard-home views show the plan and specification with keyboard and bilingual support', async ({ page }) => {
   await page.goto('./');
-  await page.getByRole('tab', { name: 'Floor plan', exact: true }).click();
+  await page.locator('#solution').getByRole('tab', { name: 'Floor plan', exact: true }).click();
   await expect(page.locator('#view-plan')).toBeVisible();
   await expect(page.locator('#view-exterior')).not.toBeVisible();
   await expect(page.locator('#view-plan')).toContainText('Illustrative zoning');
   await page.keyboard.press('ArrowRight');
-  await expect(page.getByRole('tab', { name: 'Standard specification', exact: true })).toBeFocused();
+  await expect(page.locator('#solution').getByRole('tab', { name: 'Standard specification', exact: true })).toBeFocused();
   await expect(page.locator('#view-specification')).toBeVisible();
   await expect(page.locator('#view-specification')).toContainText('10 primary composite panels');
   await page.getByRole('button', { name: 'Bahasa Indonesia', exact: true }).click();
-  await expect(page.getByRole('tab', { name: 'Spesifikasi standar', exact: true })).toHaveAttribute('aria-selected', 'true');
+  await expect(page.locator('#solution').getByRole('tab', { name: 'Spesifikasi standar', exact: true })).toHaveAttribute('aria-selected', 'true');
   await expect(page.locator('#view-specification')).toContainText('Fondasi');
-  await page.getByRole('tab', { name: 'Denah', exact: true }).click();
+  await page.locator('#solution').getByRole('tab', { name: 'Denah', exact: true }).click();
   await expect(page.locator('#view-plan')).toContainText('Kamar tidur 01');
   await page.keyboard.press('Home');
-  await expect(page.getByRole('tab', { name: 'Eksterior', exact: true })).toBeFocused();
+  await expect(page.locator('#solution').getByRole('tab', { name: 'Eksterior', exact: true })).toBeFocused();
   await expect(page.locator('#finish-controls')).toBeVisible();
 });
 
@@ -127,7 +127,7 @@ test('the website leads with multiple solutions and uses Inter throughout', asyn
   await expect(page.locator('#applications')).toContainText('Dormitories & accommodation');
   expect(await page.evaluate(() => Boolean(document.querySelector('#applications').compareDocumentPosition(document.querySelector('#solution')) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
   expect(await page.evaluate(() => [...document.querySelectorAll('body *:not(source)')].map(el => getComputedStyle(el).fontFamily.split(',')[0].trim().replaceAll('"', '')).filter(font => font !== 'Inter'))).toEqual([]);
-  await page.locator('[data-project=sectorEdu]').click();
+  await page.locator('#applications [data-project=sectorEdu]').click();
   await expect(page.locator('[name=sector]')).toHaveValue('sectorEdu');
   await expect(page.locator('#budget')).toContainText('there is no universal unit price');
   await page.getByRole('button', { name: 'Bahasa Indonesia', exact: true }).click();
@@ -139,8 +139,8 @@ test('brand assets and video load, pricing is project specific', async ({page, r
  await page.goto('./');
  await expect(page.locator('.footer-group img')).toHaveAttribute('alt','Fjäll Group');
  await expect(page.locator('body')).not.toContainText('Rp 50');
- await expect(page.locator('.price')).toContainText('PROJECT-SPECIFIC PROPOSAL');
- for (const path of ['public/brand/fad-mark.svg','public/brand/fjall-group.png','public/video/fad-system.mp4']) expect((await request.get('./'+path)).ok()).toBe(true);
+ await expect(page.locator('#solution .price')).toContainText('PROJECT-SPECIFIC PROPOSAL');
+ for (const path of ['public/brand/fad-mark.svg','public/brand/fjall-group.png','public/video/fad-opening.mp4']) expect((await request.get('./'+path)).ok()).toBe(true);
  await expect(page.locator('.brand-film video')).toHaveAttribute('controls','');
 });
 test('video intro is skippable and only shown once per session', async ({page}) => {
@@ -168,4 +168,44 @@ test('video intro closes automatically if the visitor does not skip', async ({pa
  await expect(page.locator('.video-intro')).toBeVisible();
  await expect(page.locator('.video-intro')).toHaveCount(0, {timeout:6500});
  await expect(page.locator('#app')).toHaveJSProperty('inert', false);
+});
+
+for (const [key,sector,title] of [['workers','sectorCorp','Worker accommodation.'],['school','sectorEdu','Schools & learning campuses.'],['hospital','sectorHealth','Hospitals & healthcare campuses.']]) {
+ test(`${key} presentation has independent views, keyboard navigation and an application enquiry`, async ({page}) => {
+  await page.goto('./');const section=page.locator('#'+key);
+  await expect(section.locator('h2')).toContainText(title);
+  await section.getByRole('tab',{name:'Illustrative layout',exact:true}).click();
+  await expect(section.locator('#'+key+'-view-layout')).toBeVisible();
+  await expect(page.locator('#view-exterior')).toBeVisible();
+  await page.keyboard.press('ArrowRight');
+  await expect(section.locator('#'+key+'-view-spec')).toBeVisible();
+  await expect(section.getByRole('tab',{name:'Project specification',exact:true})).toBeFocused();
+  await expect(section.locator('.spec-table')).toContainText('Scope & approvals');
+  await page.locator('[name=message]').fill('Existing site brief');
+  await section.locator('[data-application]').click();
+  await expect(page.locator('[name=sector]')).toHaveValue(sector);
+  await expect(page.locator('[name=message]')).toHaveValue('Existing site brief\n'+title);
+  await page.getByRole('button',{name:'Bahasa Indonesia',exact:true}).click();
+  await expect(section.getByRole('tab',{name:'Spesifikasi proyek',exact:true})).toHaveAttribute('aria-selected','true');
+  await expect(section.locator('.spec-table')).toContainText('Lingkup & persetujuan');
+ });
+}
+test('new assets have sharp home images, transparent logo panels and a new opening film', async ({page,request})=>{
+ await page.goto('./');
+ for(const color of ['olive','brown','yellow','purple']){
+  await page.locator(`[data-finish=${color}]`).click();
+  await expect.poll(()=>page.locator('#product-image').evaluate(img=>img.complete?img.naturalWidth:0)).toBeGreaterThan(1400);
+ }
+ for(const logo of ['.hero-end .group-logo','.footer-group .group-logo'])expect(await page.locator(logo).evaluate(el=>getComputedStyle(el).backgroundColor)).toBe('rgba(0, 0, 0, 0)');
+ expect((await request.get('./public/video/fad-opening.mp4')).ok()).toBe(true);
+ await expect(page.locator('.brand-film source')).toHaveAttribute('src','./public/video/fad-opening.mp4');
+});
+test('architectural icons render through WebGL and retain a no-WebGL fallback', async ({page})=>{
+ await page.goto('./');await page.locator('.metrics').scrollIntoViewIfNeeded();
+ await expect.poll(()=>page.locator('.metrics [data-rendered=webgl]').count()).toBe(4);
+ const canvas=page.locator('.metrics canvas').first();
+ expect(await canvas.evaluate(c=>c.getContext('2d').getImageData(0,0,c.width,c.height).data.some((v,i)=>i%4===3&&v>0))).toBe(true);
+ await page.addInitScript(()=>{const original=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(type,...args){return type==='webgl'||type==='webgl2'?null:original.call(this,type,...args);};});
+ await page.reload();await expect(page.locator('.metrics .spatial-fallback').first()).toBeVisible();
+ await expect(page.locator('[data-rendered=webgl]')).toHaveCount(0);
 });

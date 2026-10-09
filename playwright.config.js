@@ -6,7 +6,7 @@ export default defineConfig({
   reporter: 'list',
   use: {
     headless: true,
-    launchOptions: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE } : {},
+    launchOptions: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE, args: ['--enable-unsafe-swiftshader'] } : {},
   },
   projects: [
     { name: 'static-source', use: { baseURL: 'http://127.0.0.1:5173/' } },
