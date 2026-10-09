@@ -1,5 +1,8 @@
 import { test, expect } from '@playwright/test';
 
+// Other flow checks bypass the optional introduction; dedicated tests cover it.
+test.beforeEach(async ({ page }, testInfo) => { if (testInfo.title.startsWith('video intro')) return; await page.addInitScript(() => sessionStorage.setItem('fad-intro-seen', '1')); });
+
 test('language switching translates the page, preserves input, and survives reload', async ({ page }) => {
   await page.goto('./');
   await page.locator('[name=name]').fill('Project Partner');
@@ -7,7 +10,7 @@ test('language switching translates the page, preserves input, and survives relo
   await expect(page.locator('html')).toHaveAttribute('lang', 'id');
   await expect(page.locator('h1')).toContainText('Bangun lebih cerdas.');
   await expect(page.locator('.form-submit')).toContainText('Siapkan pertanyaan proyek');
-  await expect(page.locator('[name=sector] option[value=sectorGov]')).toHaveText('Program perumahan pemerintah');
+  await expect(page.locator('[name=sector] option[value=sectorGov]')).toHaveText('Program pemerintah & sektor publik');
   await expect(page.locator('[name=name]')).toHaveValue('Project Partner');
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('lang', 'id');
@@ -22,10 +25,10 @@ test('government CTA qualifies the project and required fields prevent an empty 
   expect(await page.locator('#lead-form').evaluate(form => form.checkValidity())).toBe(false);
 });
 
-test('budget calculation updates and carries the unit count into the enquiry', async ({ page }) => {
+test('programme planner carries its scale into the enquiry without a price', async ({ page }) => {
   await page.goto('./');
   await page.getByRole('button', { name: '500', exact: true }).click();
-  await expect(page.locator('#budget-total')).toHaveText('Rp 25,000,000,000');
+  await expect(page.locator('#budget-total')).toHaveText('500');
   await page.locator('#budget-enquiry').click();
   await expect(page.locator('[name=units]')).toHaveValue('500');
   await page.locator('#budget-units').fill('0');
@@ -44,7 +47,7 @@ test('a complete enquiry produces a review and an encoded WhatsApp brief without
   await page.locator('[name=consent]').check();
   await page.locator('.form-submit').click();
   await expect(page.locator('#review-dialog')).toBeVisible();
-  await expect(page.locator('#project-brief')).toContainText('Program perumahan pemerintah');
+  await expect(page.locator('#project-brief')).toContainText('Program pemerintah & sektor publik');
   const destination = new URL(await page.locator('#send-whatsapp').getAttribute('href'));
   expect(destination.origin + destination.pathname).toBe('https://wa.me/6281237535508');
   expect(destination.searchParams.get('text')).toContain(fields.message);
@@ -123,11 +126,46 @@ test('the website leads with multiple solutions and uses Inter throughout', asyn
   await expect(page.locator('#applications')).toContainText('Education & learning');
   await expect(page.locator('#applications')).toContainText('Dormitories & accommodation');
   expect(await page.evaluate(() => Boolean(document.querySelector('#applications').compareDocumentPosition(document.querySelector('#solution')) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
-  expect(await page.evaluate(() => [...document.querySelectorAll('body *')].map(el => getComputedStyle(el).fontFamily.split(',')[0].trim().replaceAll('"', '')).filter(font => font !== 'Inter'))).toEqual([]);
+  expect(await page.evaluate(() => [...document.querySelectorAll('body *:not(source)')].map(el => getComputedStyle(el).fontFamily.split(',')[0].trim().replaceAll('"', '')).filter(font => font !== 'Inter'))).toEqual([]);
   await page.locator('[data-project=sectorEdu]').click();
   await expect(page.locator('[name=sector]')).toHaveValue('sectorEdu');
-  await expect(page.locator('#budget')).toContainText('This estimate applies only');
+  await expect(page.locator('#budget')).toContainText('there is no universal unit price');
   await page.getByRole('button', { name: 'Bahasa Indonesia', exact: true }).click();
   await expect(page.locator('.hero')).not.toContainText('Tipe 36');
   await expect(page.locator('#applications')).toContainText('Pendidikan & pembelajaran');
+});
+
+test('brand assets and video load, pricing is project specific', async ({page, request}) => {
+ await page.goto('./');
+ await expect(page.locator('.footer-group img')).toHaveAttribute('alt','Fjäll Group');
+ await expect(page.locator('body')).not.toContainText('Rp 50');
+ await expect(page.locator('.price')).toContainText('PROJECT-SPECIFIC PROPOSAL');
+ for (const path of ['public/brand/fad-mark.svg','public/brand/fjall-group.png','public/video/fad-system.mp4']) expect((await request.get('./'+path)).ok()).toBe(true);
+ await expect(page.locator('.brand-film video')).toHaveAttribute('controls','');
+});
+test('video intro is skippable and only shown once per session', async ({page}) => {
+ await page.goto('./');
+ await page.evaluate(()=>sessionStorage.removeItem('fad-intro-seen'));
+ await page.addInitScript(() => { if (!sessionStorage.getItem('intro-test-started')) { sessionStorage.removeItem('fad-intro-seen'); sessionStorage.setItem('intro-test-started','1'); } });
+ await page.reload();
+ await expect(page.locator('.video-intro')).toBeVisible();
+ await expect(page.locator('#app')).toHaveJSProperty('inert', true);
+ await page.locator('.intro-skip').click();
+ await expect(page.locator('.video-intro')).toHaveCount(0);
+ await expect(page.locator('#app')).toHaveJSProperty('inert', false);
+ await page.reload();
+ await expect(page.locator('.video-intro')).toHaveCount(0);
+});
+test('reduced motion bypasses the intro', async ({page}) => {
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await page.goto('./'); await page.evaluate(()=>sessionStorage.removeItem('fad-intro-seen')); await page.reload();
+ await expect(page.locator('.video-intro')).toHaveCount(0);
+});
+test('video intro closes automatically if the visitor does not skip', async ({page}) => {
+ await page.goto('./');
+ await page.evaluate(()=>sessionStorage.removeItem('fad-intro-seen'));
+ await page.reload();
+ await expect(page.locator('.video-intro')).toBeVisible();
+ await expect(page.locator('.video-intro')).toHaveCount(0, {timeout:6500});
+ await expect(page.locator('#app')).toHaveJSProperty('inert', false);
 });

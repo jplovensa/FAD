@@ -48,7 +48,7 @@ All typography is locally hosted **Inter**, including headings, body text, contr
 
 FAD is presented as a scalable building solution for residential housing, educational facilities, and accommodation. The site follows Amoda's solution-first structure, broad architectural hero, consultation calls to action, rounded cards, and project process. Photography and specifications come from the supplied Fjäll deck, not from Amoda.
 
-Type 36 is a documented reference example, not the entire FAD offering. Its exterior choices, illustrative room-zoning diagram, material specification, and calculator remain available further down the page. The calculator's Rp 50 million unit value applies only to this 36 m² reference home. Other configurations and uses require their own project specification and proposal. The floor plan is a discussion illustration, not an approved construction drawing.
+Type 36 is a documented reference example, not the entire FAD offering. Its exterior choices, illustrative room-zoning diagram, and material specification remain available further down the page. The programme planner captures quantities without publishing a unit price. Every configuration requires its own project specification and proposal. The floor plan is a discussion illustration, not an approved construction drawing.
 
 Design reference: https://www.amoda.id/. Its page content was reviewed; external media asset access in the cloud environment is restricted. No third-party project claims, customer counts, or proprietary reference assets are copied.
 
@@ -58,7 +58,7 @@ The form qualifies enquiries by organisation, location, project type, number of 
 
 This is a WhatsApp enquiry workflow, not a CRM/database integration. Contact routing is in `src/main.js`. Both language versions are in `src/content.js`. The bilingual privacy explanation is in the footer.
 
-The calculator uses the deck's indicative Rp 50 million value only for the Type 36 reference home. Assembly time refers to superstructure assembly, not full project completion. Images are concepts, not completed projects. Final prices, scope, engineering suitability, certifications, procurement qualifications, and delivery commitments require project-specific confirmation. The commercial deck is available at `public/fjall-commercial-deck.pdf`.
+Website prices and monetary estimates have been removed; proposals are project-specific. The source PDF remains available in its original form. Assembly time refers to superstructure assembly, not full project completion. Images are concepts, not completed projects. Final prices, scope, engineering suitability, certifications, procurement qualifications, and delivery commitments require project-specific confirmation. The commercial deck is available at `public/fjall-commercial-deck.pdf`.
 
 ## Browser tests
 
@@ -77,3 +77,12 @@ npm test
 The same functional tests run against the raw static source and the static build at `/FAD/`. They cover language switching, preference persistence, form input preservation, government enquiries, mandatory fields, the WhatsApp brief, calculator boundaries, all exterior images, keyboard-accessible design-view tabs, bilingual specifications, font loading, PDF availability, and desktop/tablet/mobile layouts. Tests do not send enquiries.
 
 Each cloud task is already isolated. Use this checkout; do not create a Git worktree unless explicitly requested.
+
+
+### FAD identity and film
+
+The complete logo is `public/brand/fad-logo.svg`, with embedded Inter for consistent export. FAD’s modular symbol is supplied as `public/brand/fad-mark.svg` and the group logo as `public/brand/fjall-group.png` (the matching asset from the group website). The palette follows Fjäll Group forest green `#193a32`, teal `#398780`, and GreenShift mint `#a1e5cf`, with `#f5f4ed` paper. Typography remains locally hosted Inter.
+
+The group website’s FAD concept trailer is hosted locally at `public/video/fad-system.mp4`. The optional muted introduction lasts at most 4.5 seconds, supports immediate skip / Escape, restores focus, and runs once per tab session. Reduced motion, data saving, autoplay rejection, and video failure bypass it. The page never depends on loading the video. The complete concept film has playback controls within the page.
+
+Copy describes project-specific planning, build coordination, and phased programmes. Applications are reviewed around the brief; no completed projects, certifications, or fixed delivery commitments are implied.
