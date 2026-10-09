@@ -1,7 +1,4 @@
-<!doctype html><html><head><style>@font-face{font-family:Inter;src:url('../../public/fonts/inter-latin.woff2')}body{margin:0;background:#052525}canvas{display:block}</style></head><body><canvas id="film" width="1280" height="720"></canvas><script type="module">
-import{createRenderer}from'../../src/webgl.js';
-const gpu=document.createElement('canvas');gpu.width=1280;gpu.height=720;const renderer=createRenderer(gpu);if(!renderer)throw Error('WebGL required to author film');
-const canvas=document.querySelector('canvas'),ctx=canvas.getContext('2d');await document.fonts.load('600 24px Inter');
-window.renderFAD=progress=>{renderer.scene(progress);ctx.drawImage(gpu,0,0);const grad=ctx.createLinearGradient(0,0,0,720);grad.addColorStop(0,'#05252566');grad.addColorStop(.4,'#05252500');grad.addColorStop(1,'#052525ee');ctx.fillStyle=grad;ctx.fillRect(0,0,1280,720);
-ctx.fillStyle='#a1e5cf';ctx.font='600 13px Inter';ctx.fillText('FAD  /  AFFORDABLE DEVELOPMENT',56,58);ctx.textAlign='right';ctx.font='400 12px Inter';ctx.fillText('STANDARDISE. REPEAT. SCALE.',1224,58);ctx.textAlign='left';ctx.fillStyle='#ffffff';ctx.font='600 45px Inter';ctx.fillText(progress<.3?'A standard build.':progress<.7?'A repeatable system.':'Development at scale.',56,628);ctx.fillStyle='#a1e5cf';ctx.font='400 14px Inter';ctx.fillText('Housing  /  Worker accommodation  /  Education  /  Healthcare support',58,666);ctx.font='400 10px Inter';ctx.textAlign='right';ctx.fillStyle='#b4c9c0';ctx.fillText('ILLUSTRATIVE SYSTEM ANIMATION',1224,666);ctx.textAlign='left';return canvas.toDataURL('image/png').split(',')[1];};window.fadReady=true;window.renderFAD(0);
+<!doctype html><html><head><style>body{margin:0}canvas{display:block}</style></head><body><canvas id="scene" width="1280" height="720"></canvas><script type="module">
+import{createFadScene}from'../../public/vendor/fad-scene.js';
+window.fadScene=await createFadScene(document.querySelector('canvas'),{quality:'high'});await window.fadScene.render(1,.65);window.fadReady=true;
 </script></body></html>

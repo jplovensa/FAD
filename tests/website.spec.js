@@ -160,7 +160,7 @@ test('video intro closes automatically if the visitor does not skip', async ({pa
  await page.goto('./');
  await page.reload();
  await expect(page.locator('.video-intro')).toBeVisible();
- await expect(page.locator('.video-intro')).toHaveCount(0, {timeout:6500});
+ await expect(page.locator('.video-intro')).toHaveCount(0, {timeout:20500});
  await expect(page.locator('#app')).toHaveJSProperty('inert', false);
 });
 
@@ -221,4 +221,20 @@ test('government phone validation rejects non-phone input',async({page})=>{
 });
 test('video intro chooses the portrait film on mobile',async({page})=>{
  await page.setViewportSize({width:390,height:844});await page.goto('./');await expect(page.locator('.video-intro source')).toHaveAttribute('src','./public/video/fad-opening-portrait.mp4');await expect(page.locator('.video-intro')).toBeVisible();await page.locator('.intro-skip').click();await expect(page.locator('.video-intro')).toHaveCount(0);
+});
+
+test('FAD in Motion progresses from a home to facilities with accessible controls',async({page})=>{
+ test.setTimeout(60000);
+ await page.goto('./');const player=page.locator('.motion-player');await player.scrollIntoViewIfNeeded();
+ await expect(player).toHaveAttribute('data-ready','true',{timeout:20000});
+ await expect(player).toHaveAttribute('data-backend',/webgpu|webgl/);
+ await expect(player.locator('canvas')).toBeVisible();await player.locator('[data-motion-stage="3"]').click();
+ await expect(player.locator('input')).toHaveValue('100',{timeout:10000});
+ await expect(player.locator('[data-motion-stage="3"]')).toHaveAttribute('aria-pressed','true');
+ await player.locator('.motion-left').click();await player.locator('.motion-play').click();await expect(player.locator('.motion-play')).toHaveText('Pause process');await player.locator('.motion-play').click();
+ await page.getByRole('button',{name:'Bahasa Indonesia',exact:true}).click();await expect(player.locator('.motion-play')).toHaveText('Putar proses');await expect(player.locator('.motion-stages')).toContainText('Fasilitas skala besar');
+});
+test('FAD in Motion retains a film if GPU rendering is unavailable',async({page})=>{
+ await page.addInitScript(()=>{const original=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(type,...args){return /webgl|webgpu/.test(type)?null:original.call(this,type,...args);};});
+ await page.goto('./');const player=page.locator('.motion-player');await player.scrollIntoViewIfNeeded();await expect(player).toHaveAttribute('data-backend','video',{timeout:20000});await expect(player.locator('video')).toBeVisible();await expect(player.locator('.motion-controls')).not.toBeVisible();
 });

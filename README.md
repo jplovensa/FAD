@@ -1,6 +1,6 @@
 # Fjäll Affordable Development
 
-A responsive English / Bahasa Indonesia website for Fjäll Group's mass-scale development product. Built with plain HTML, CSS, browser-native JavaScript modules, and locally hosted fonts. No framework, bundler, compilation, API keys, or production npm packages are needed. Reference product specifications come from the supplied commercial deck. Updated architectural visuals are AI-enhanced or AI-generated concepts, and the opening film uses a realistic architectural image montage.
+A responsive English / Bahasa Indonesia website for Fjäll Group's mass-scale development product. Built with plain HTML, CSS, browser-native JavaScript modules, and locally hosted fonts. The deployed site needs no framework, API keys, compilation, or runtime npm installation. A checked-in local scene bundle supports the 3D film; optional authoring dependencies are used to regenerate it. Reference product specifications come from the supplied commercial deck. Updated architectural visuals are AI-enhanced or AI-generated concepts, and the opening film uses a realistic architectural image montage.
 
 ## GitHub Pages
 
@@ -83,7 +83,7 @@ Each cloud task is already isolated. Use this checkout; do not create a Git work
 
 The complete logo is `public/brand/fad-logo.svg`, with embedded Inter for consistent export. FAD’s modular symbol is supplied as `public/brand/fad-mark.svg` and the group logo as `public/brand/fjall-group.png` (the matching asset from the group website). The palette follows Fjäll Group forest green `#193a32`, teal `#398780`, and GreenShift mint `#a1e5cf`, with `#f5f4ed` paper. Typography remains locally hosted Inter.
 
-The opening film uses realistic architectural concept imagery with gentle camera movement: homes, workforce accommodation, schools, and healthcare facilities. `public/video/fad-opening.mp4` is the landscape version and `public/video/fad-opening-portrait.mp4` is the mobile portrait version. Both run about 5.7 seconds. The video covers the entire viewport and replays on every page load or refresh. Skip / Escape, focus restoration, reduced motion, data saving, autoplay failure, and video failure are handled. A 6-second timeout guarantees the page does not wait for video download or playback. The same landscape film has playback controls within the page. Images remain clearly labeled as illustrative concepts, not completed-project footage.
+The opening film is a continuous 18-second, full-circle camera orbit around the FAD 3D development concept. `public/video/fad-opening.mp4` is the landscape version and `public/video/fad-opening-portrait.mp4` is its mobile framing. Camera motion is computed from a constant angular path, without image zooms, cuts, or positional jitter. It covers the viewport and replays on every page load or refresh. Skip / Escape, focus restoration, reduced motion, data saving, autoplay failure, and video failure are handled. A 19-second timeout releases the page if playback fails to finish. This is an illustrative rendered concept, not completed-project footage.
 
 Copy describes project-specific planning, build coordination, and phased programmes. Applications are reviewed around the brief; no completed projects, certifications, or fixed delivery commitments are implied.
 
@@ -94,9 +94,18 @@ Worker accommodation, schools, and hospital/healthcare campuses each use the Typ
 
 `src/webgl.js` renders architectural symbols with one shared WebGL context, then composites the result into each visible icon canvas. It only animates visible icons, caps updates around 15 fps, pauses in hidden tabs, and renders statically for reduced motion. The FAD vector mark remains visible when WebGL is unavailable or its context is lost. Navigation and action controls retain clear conventional symbols.
 
-To regenerate both opening movies, execute `node scripts/video/render-opening.mjs` with Node and FFmpeg installed. These tools are for authoring only; GitHub Pages serves the already rendered MP4 without a build dependency.
+To regenerate both opening movies, run the local dev server on port 5173, then execute `node scripts/video/render-opening.mjs` with Node, Chromium, and FFmpeg installed. These tools are for authoring only; GitHub Pages serves the already rendered MP4 without a build dependency.
 
 
 ### Government programme enquiries
 
 The former building technology section is removed. Navigation now links to the government programme section. Its dedicated form captures contact and agency, project location, programme type, target capacity, planning/procurement stage, and delivery timeline, with optional land status, fiscal year, funding context, and document requirements. Programme cards preselect the government use case. Required fields, phone validation, and consent protect enquiry quality. A reviewed, safely encoded WhatsApp brief follows the existing user-controlled send workflow; no backend or CRM is implied. The form supports English and Bahasa Indonesia and preserves input on language switching.
+
+
+### FAD in Motion: WebGPU development process
+
+`src/fad-scene.js` authors the shared physically lit 3D scene: a 36 m² reference-style home, repeatable housing, a coordinated development, and school, accommodation, and healthcare-support facility concepts. Painted and wood materials, glazing, sunlight, shadow maps, deterministic surface detail, and photographic cutout vegetation provide architectural context. The scene illustrates applications rather than documenting an engineered or approved project.
+
+`src/motion.js` loads the checked-in `public/vendor/fad-scene.js` bundle as the section enters view. Three.js WebGPURenderer selects native WebGPU where supported and WebGL otherwise. Renderer/device failure presents a playable recorded film. Browser support requires a secure context (GitHub Pages supplies HTTPS). The controls support play/pause, replay, stage selection, scrubbing, keyboard camera buttons, and pointer orbit. Progress and camera movement use elapsed time; rendering pauses off-screen and in hidden tabs. Initial display is static until the visitor chooses play.
+
+To update renderer source, run `npm ci --cache /tmp/fad-npm-cache` and `npm run build:renderer`, then commit the rebuilt local bundle alongside the source. `npm run build` continues to copy static files for GitHub Pages. Three.js is bundled locally under its MIT licence in `public/vendor/Three-LICENSE.txt`; no CDN is required. Native WebGPU adapters in this cloud fail basic queue submission; visual and functional checks use the WebGL backend and verify the recorded-film fallback. Native hardware rendering remains to be verified in a supported browser.
