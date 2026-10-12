@@ -28,6 +28,27 @@ function building(w,d,{mode='exterior',finish='olive',type='home'}={}){
  return g;
 }
 function place(g,o,x,z,angle=0){o.position.set(x,0,z);o.rotation.y=angle;g.add(o);}
+// Programme-specific assemblies match the published brief without assigning unverified capacity.
+function facilityProgramme(kind,mode='shell',form='default'){
+ const g=new THREE.Group();const add=(w,d,x,z,angle=0,type=kind)=>place(g,building(w,d,{mode,type}),x,z,angle);
+ if(kind==='workers'){
+  // Narrow room wings, central shared amenities and an independent wet-service block.
+  add(18,5,-9,-5,Math.PI/2);add(18,5,9,-5,Math.PI/2);add(9,6,0,8,0,'shared');add(6,4,0,-15,0,'service');box(g,0,.03,-3,12,.06,17,'land');
+  for(const side of[-1,1]){box(g,side*5.7,.15,-5,1.8,.15,18,'slab');if(mode!=='interior'){box(g,side*5.7,2.9,-5,1.9,.12,18,'wall');for(let z=-13;z<=3;z+=4)box(g,side*4.9,1.55,z,.12,2.8,.12,'frame');}}
+ }else if(kind==='school'){
+  // Two teaching wings frame the supervised courtyard; support and sanitation are separate.
+  add(18,7,0,-8);add(12,7,-12,3,Math.PI/2);add(7,5,11,3,0,'admin');add(5,4,11,-8,0,'service');box(g,0,.03,4,14,.06,13,'land');box(g,0,.1,-3.3,18,.1,2,'slab');box(g,-7.3,.1,3,2,.1,12,'slab');
+  if(mode!=='interior'){box(g,0,2.9,-3.3,18,.12,2,'wall');box(g,-7.3,2.9,3,2,.12,12,'wall');}
+ }else{
+  // Civic arrival/reception, distinct staff/support wing and a rear service pavilion.
+  add(12,8,0,6,0,'admin');add(14,6,-11,-4,Math.PI/2);add(10,6,10,-6,Math.PI/2);add(6,5,1,-12,0,'service');box(g,0,.03,-3,11,.06,10,'land');box(g,0,.1,12,8,.12,5,'slab');box(g,18,.03,-2,4,.06,27,'slab');
+  if(mode!=='interior'){box(g,0,3,12,8,.18,5,'wall');for(const x of[-3.6,3.6])box(g,x,1.6,13.8,.16,3,.16,'frame');}
+ }
+ // Alternate arrangements retain application-specific modules rather than repeating one generic hall.
+ if(form==='linear'){for(let i=0;i<g.children.length;i++){const o=g.children[i];if(o.isGroup)o.position.set((i-1.5)*15,0,0);else o.visible=false;}}
+ if(form==='compact'){g.scale.setScalar(.8);for(const o of g.children)if(o.isGroup)o.position.z*=.7;}
+ return g;
+}
 window.renderMockup=async({kind='r36',mode='exterior',finish='olive'}={})=>{
  if(model)scene.remove(model);model=new THREE.Group();scene.add(model);
  mat.green.color.set(({olive:'#648373',brown:'#967553',yellow:'#c7aa58',purple:'#8a799c'})[finish]);
@@ -35,6 +56,10 @@ window.renderMockup=async({kind='r36',mode='exterior',finish='olive'}={})=>{
  if(kind==='campus'||kind==='family'){
   if(kind==='family'){for(const [i,k]of ['r18','r36','r72'].entries())place(model,building(...sizes[k]),(i-1)*11,0);}
   else{for(let r=0;r<2;r++)for(let c=0;c<4;c++)place(model,building(6,6),c*8-12,r*11-7);place(model,building(18,8,{type:'school'}),0,-19);box(model,0,.025,0,36,.05,3,'slab');}
+ }else if(!kind.startsWith('r')){
+  if(mode==='variations'){
+   for(const [i,form]of ['linear','compact','default'].entries()){const campus=facilityProgramme(kind,'shell',form);campus.scale.multiplyScalar(.55);place(model,campus,(i-1)*30,0);}
+  }else model.add(facilityProgramme(kind,mode));
  }else if(mode==='variations'){
   const [w,d]=sizes[kind];const scale=kind.startsWith('r')?.55:.45;
   const straight=building(w,d,{mode:'shell',type:kind.startsWith('r')?'home':kind});straight.scale.setScalar(scale);place(model,straight,-w*.8,0);
