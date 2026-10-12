@@ -9,7 +9,7 @@ const root = await realpath(path.resolve(fileURLToPath(new URL('../', import.met
 const port = Number(option('--port', process.env.PORT || '5173'));
 const prefix = '/' + option('--base', '/').split('/').filter(Boolean).join('/');
 const base = prefix === '/' ? '/' : prefix + '/';
-const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.jpg': 'image/jpeg', '.png': 'image/png', '.woff2': 'font/woff2', '.pdf': 'application/pdf', '.txt': 'text/plain; charset=utf-8' };
+const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.jpg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp', '.woff2': 'font/woff2', '.pdf': 'application/pdf', '.txt': 'text/plain; charset=utf-8' };
 if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('Invalid port');
 const server = http.createServer(async (req, res) => {
   try {

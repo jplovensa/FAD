@@ -257,7 +257,12 @@ test('FAD R designs switch views and carry the selected size into the bilingual 
   await expect(page.locator(`[data-residential="${size}"]`)).toHaveAttribute('aria-pressed','true');
   await expect(page.locator('.residential-code')).toHaveText(`FAD R / ${size}`);
   await expect(page.locator('[data-residential-area]')).toHaveText(`${size} m²`);
+  await expect(page.locator(`[data-residential="${size}"] img`)).toHaveAttribute('src',`./public/images/residential/fad-r-${size}-render.webp`);
+  await expect(page.locator('#product-image')).toHaveAttribute('src',`./public/images/residential/fad-r-${size}-render.webp`);
   await page.locator('#tab-plan').click();await expect(page.locator('#view-plan')).toContainText(`FAD R ${size}`);
+  for(const room of ['Kitchen','Bathroom','Front terrace'])await expect(page.locator('#view-plan')).toContainText(room);
+  await expect(page.locator('#view-plan .r-door')).toHaveCount(({18:2,36:5,72:6})[size]);
+  expect(await page.locator('#view-plan .r-window').count()).toBeGreaterThan(3);
   await page.locator('#tab-specification').click();await expect(page.locator('#view-specification')).toContainText(size===36?'10 primary composite panels':`${size} m²`);
   if(size!==36)await expect(page.locator('#view-specification')).toContainText('not an approved construction specification');
   await page.locator('#tab-exterior').click();
