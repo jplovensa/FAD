@@ -470,7 +470,13 @@ export const content = {
     "hospitalMockinteriorTitle": "Administration, staff & support spaces",
     "hospitalMockinteriorText": "Roof-off support buildings illustrate separate administrative and staff functions. Clinical uses, infection control, services, and patient circulation require specialist design.",
     "hospitalMockvariationsTitle": "Linear support campus · compact campus · sheltered arrival",
-    "hospitalMockvariationsText": "Three massing studies explore how repeatable modules can be arranged. These shapes do not represent the same floor area; capacity, circulation, and site fit require review."
+    "hospitalMockvariationsText": "Three massing studies explore how repeatable modules can be arranged. These shapes do not represent the same floor area; capacity, circulation, and site fit require review.",
+    "r18CoverAlt": "FAD R18 compact studio concept with a single-slope roof in a coastal village setting",
+    "r36CoverAlt": "FAD R36 two-bedroom starter-home concept with a pitched roof and suburban front garden",
+    "r72CoverAlt": "FAD R72 three-bedroom family-home concept with a hip roof, shaded terrace, and elongated footprint",
+    "workersCoverAlt": "Worker accommodation concept with industrial-style room wings, covered paths, and communal services",
+    "schoolCoverAlt": "School campus concept with classroom roof bays, covered verandas, and an outdoor learning courtyard",
+    "hospitalCoverAlt": "Healthcare support campus concept with flat-roof civic blocks and a sheltered accessible arrival"
   },
   "id": {
     "skip": "Langsung ke konten",
@@ -943,6 +949,12 @@ export const content = {
     "hospitalMockinteriorTitle": "Administrasi, staf & ruang pendukung",
     "hospitalMockinteriorText": "Bangunan tanpa atap menggambarkan fungsi administrasi dan staf yang terpisah. Fungsi klinis, pengendalian infeksi, utilitas, dan sirkulasi pasien memerlukan desain spesialis.",
     "hospitalMockvariationsTitle": "Kampus linear · kampus ringkas · area kedatangan teduh",
-    "hospitalMockvariationsText": "Tiga studi massa mengeksplorasi susunan modul berulang. Bentuk ini tidak memiliki luas lantai yang sama; kapasitas, sirkulasi, dan kesesuaian lokasi perlu dikaji."
+    "hospitalMockvariationsText": "Tiga studi massa mengeksplorasi susunan modul berulang. Bentuk ini tidak memiliki luas lantai yang sama; kapasitas, sirkulasi, dan kesesuaian lokasi perlu dikaji.",
+    "r18CoverAlt": "Konsep studio ringkas FAD R18 dengan atap satu arah di lingkungan desa pesisir",
+    "r36CoverAlt": "Konsep hunian dua kamar FAD R36 dengan atap pelana dan taman depan di lingkungan perumahan",
+    "r72CoverAlt": "Konsep hunian keluarga tiga kamar FAD R72 dengan atap perisai, teras teduh, dan tapak memanjang",
+    "workersCoverAlt": "Konsep akomodasi pekerja dengan sayap hunian bergaya industri, jalur beratap, dan servis bersama",
+    "schoolCoverAlt": "Konsep kampus sekolah dengan modul atap ruang kelas, selasar beratap, dan halaman belajar",
+    "hospitalCoverAlt": "Konsep kampus pendukung kesehatan dengan bangunan atap datar dan area kedatangan teduh yang aksesibel"
   }
 };

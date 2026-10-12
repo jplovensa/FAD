@@ -100,3 +100,7 @@ body{background:#f5f4ed}.header,.footer,.government{background:#193a32}.brand{ga
 /* Realistic covers fill the presentation; technical study images retain their studio framing. */
 .residential-family>img{aspect-ratio:2.5}#solution .product-image-wrap>img,.sector-view.product-image-wrap>img{object-fit:cover}
 @media(max-width:760px){.residential-family>img{aspect-ratio:2.2}}
+
+/* Each residence now leads with its own architectural cover. */
+.residential-options{margin-top:38px}.residential-option>img{object-fit:cover}.application-image img{object-fit:cover}
+@media(max-width:760px){.residential-options{margin-top:28px}.residential-option>img{object-fit:contain}}
