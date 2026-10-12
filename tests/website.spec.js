@@ -220,7 +220,7 @@ test('government phone validation rejects non-phone input',async({page})=>{
  await page.goto('./');await page.locator('[name=govPhone]').fill('abcdefghi');expect(await page.locator('[name=govPhone]').evaluate(el=>el.checkValidity())).toBe(false);await page.locator('[name=govPhone]').fill('+62812345678');expect(await page.locator('[name=govPhone]').evaluate(el=>el.checkValidity())).toBe(true);
 });
 test('video intro chooses the portrait film on mobile',async({page})=>{
- await page.setViewportSize({width:390,height:844});await page.goto('./');await expect(page.locator('.video-intro source')).toHaveAttribute('src','./public/video/fad-opening-portrait.mp4');await expect(page.locator('.video-intro')).toBeVisible();await page.locator('.intro-skip').click();await expect(page.locator('.video-intro')).toHaveCount(0);
+ await page.setViewportSize({width:390,height:844});await page.goto('./');await expect(page.locator('.video-intro source')).toHaveAttribute('src','./public/video/fad-opening-portrait.mp4');await expect(page.locator('.video-intro')).toBeVisible();await expect(page.locator('.intro-group img')).toHaveAttribute('src','./public/brand/fjall-group.png');await expect(page.locator('.intro-group')).toBeVisible();await page.locator('.intro-skip').click();await expect(page.locator('.video-intro')).toHaveCount(0);
 });
 
 test('FAD in Motion progresses from a home to facilities with accessible controls',async({page})=>{
@@ -248,4 +248,25 @@ test('contact campus respects reduced motion and offers bilingual playback contr
  await page.getByRole('button',{name:'Bahasa Indonesia',exact:true}).click();await expect(campus.locator('button')).toHaveText('Jeda ilustrasi');
  await campus.locator('button').click();await expect(campus.locator('button')).toHaveText('Putar ilustrasi');
  await expect(page.locator('.gov-process li')).toHaveCount(4);await expect(page.locator('.gov-fieldset')).toHaveCount(3);
+});
+
+test('FAD R designs switch views and carry the selected size into the bilingual enquiry',async({page})=>{
+ await page.goto('./');
+ for(const size of [18,72,36]){
+  await page.locator(`[data-residential="${size}"]`).click();
+  await expect(page.locator(`[data-residential="${size}"]`)).toHaveAttribute('aria-pressed','true');
+  await expect(page.locator('.residential-code')).toHaveText(`FAD R / ${size}`);
+  await expect(page.locator('[data-residential-area]')).toHaveText(`${size} m²`);
+  await page.locator('#tab-plan').click();await expect(page.locator('#view-plan')).toContainText(`FAD R ${size}`);
+  await page.locator('#tab-specification').click();await expect(page.locator('#view-specification')).toContainText(size===36?'10 primary composite panels':`${size} m²`);
+  if(size!==36)await expect(page.locator('#view-specification')).toContainText('not an approved construction specification');
+  await page.locator('#tab-exterior').click();
+ }
+ await page.locator('[data-residential="18"]').focus();await page.keyboard.press('End');await expect(page.locator('[data-residential="72"]')).toBeFocused();
+ await page.locator('[name=message]').fill('Need a phased community.');
+ await page.locator('.residential-enquiry').click();await expect(page.locator('[name=message]')).toHaveValue(/FAD R 72 — 72 m²/);
+ await expect(page.locator('[name=message]')).toHaveValue(/Need a phased community\./);
+ await page.getByRole('button',{name:'Bahasa Indonesia',exact:true}).click();await expect(page.locator('[data-residential="72"]')).toContainText('Ruang untuk bertumbuh');await expect(page.locator('.residential-code')).toHaveText('FAD R / 72');
+ await page.locator('#tab-specification').click();await expect(page.locator('#view-specification')).toContainText('bukan spesifikasi konstruksi');
+ await page.locator('[data-residential="18"]').click();await page.locator('.residential-enquiry').click();await expect(page.locator('[name=message]')).toHaveValue(/FAD R 18 — 18 m²/);await expect(page.locator('[name=message]')).not.toHaveValue(/FAD R 72/);
 });
