@@ -275,3 +275,18 @@ test('FAD R designs switch views and carry the selected size into the bilingual 
  await page.locator('#tab-specification').click();await expect(page.locator('#view-specification')).toContainText('bukan spesifikasi konstruksi');
  await page.locator('[data-residential="18"]').click();await page.locator('.residential-enquiry').click();await expect(page.locator('[name=message]')).toHaveValue(/FAD R 18 — 18 m²/);await expect(page.locator('[name=message]')).not.toHaveValue(/FAD R 72/);
 });
+
+test('architectural mockup galleries show shells, cutaways and massing alternatives',async({page})=>{
+ await page.goto('./');
+ for(const kind of ['workers','school','hospital']){
+  const section=page.locator('#'+kind);
+  for(const [view,label]of [['shell','Shell'],['interior','Interior shell'],['variations','Shape options']]){
+   await section.getByRole('tab',{name:label,exact:true}).click();const panel=section.locator(`#${kind}-view-${view}`);await expect(panel).toBeVisible();
+   await expect(panel.locator('img')).toHaveAttribute('src',`./public/images/${kind}-${view}.webp`);await expect.poll(()=>panel.locator('img').evaluate(i=>i.complete?i.naturalWidth:0)).toBe(1600);
+  }
+  await expect(section.locator(`#${kind}-view-variations`)).toContainText('do not represent the same floor area');
+ }
+ await page.locator('[data-residential="72"]').click();await page.locator('#tab-interior').click();await expect(page.locator('#view-interior img')).toHaveAttribute('src','./public/images/residential/fad-r-72-interior.webp');
+ await page.locator('[data-residential="18"]').click();await expect(page.locator('#view-interior img')).toHaveAttribute('src','./public/images/residential/fad-r-18-interior.webp');
+ await page.getByRole('button',{name:'Bahasa Indonesia',exact:true}).click();await expect(page.locator('#tab-interior')).toHaveText('Shell interior');await expect(page.locator('#view-interior')).toContainText('Model arsitektur tanpa atap');await expect(page.locator('#hospital-tab-variations')).toHaveText('Pilihan bentuk');
+});

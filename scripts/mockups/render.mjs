@@ -1,0 +1,8 @@
+import {chromium} from '@playwright/test';import {execFileSync} from 'node:child_process';
+const browser=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--enable-unsafe-swiftshader']});const page=await browser.newPage({viewport:{width:1600,height:1000}});await page.goto('http://127.0.0.1:5173/scripts/mockups/');await page.waitForFunction(()=>window.mockupReady);
+const jobs=[];for(const n of[18,36,72]){jobs.push([{kind:`r${n}`},`public/images/residential/fad-r-${n}-render.webp`]);for(const mode of['shell','interior','variations'])jobs.push([{kind:`r${n}`,mode},`public/images/residential/fad-r-${n}-${mode}.webp`]);}
+for(const k of['workers','school','hospital']){jobs.push([{kind:k},`public/images/${k}-concept.jpg`]);for(const mode of['shell','interior','variations'])jobs.push([{kind:k,mode},`public/images/${k}-${mode}.webp`]);}
+for(const finish of['olive','brown','yellow','purple'])jobs.push([{kind:'r36',finish},`public/images/home-${finish}.jpg`]);
+jobs.push([{kind:'campus'},'public/images/campus.jpg'],[{kind:'family'},'public/images/residential/fad-r-family.png']);
+for(const [config,dest]of jobs){await page.evaluate(config=>window.renderMockup(config),config);await page.screenshot({path:'/tmp/fad-mockup-frame.png'});execFileSync('ffmpeg',['-y','-loglevel','error','-i','/tmp/fad-mockup-frame.png',...(dest.endsWith('.webp')?['-c:v','libwebp','-quality','90']:dest.endsWith('.jpg')?['-q:v','2']:[]),dest]);console.log(dest);}
+await browser.close();

@@ -1,6 +1,6 @@
 # Fjäll Affordable Development
 
-A responsive English / Bahasa Indonesia website for Fjäll Group's mass-scale development product. Built with plain HTML, CSS, browser-native JavaScript modules, and locally hosted fonts. The deployed site needs no framework, API keys, compilation, or runtime npm installation. A checked-in local scene bundle supports the 3D film; optional authoring dependencies are used to regenerate it. Reference product specifications come from the supplied commercial deck. Updated architectural visuals are AI-enhanced or AI-generated concepts, and the opening film uses a realistic architectural image montage.
+A responsive English / Bahasa Indonesia website for Fjäll Group's mass-scale development product. Built with plain HTML, CSS, browser-native JavaScript modules, and locally hosted fonts. The deployed site needs no framework, API keys, compilation, or runtime npm installation. A checked-in local scene bundle supports the 3D film; optional authoring dependencies are used to regenerate it. Reference product specifications come from the supplied commercial deck. Architectural visuals are rendered from authored 3D mockup models, and the opening film uses a continuous 3D camera orbit.
 
 ## GitHub Pages
 
@@ -46,7 +46,7 @@ The source and build both use the same structure: `index.html`, `src/`, `public/
 
 All typography is locally hosted **Inter**, including headings, body text, controls, diagrams, and enquiry dialogs. Inter's open-source licence is in `public/fonts/`. No serif font or licensed font file is required.
 
-FAD is presented as a scalable building solution for residential housing, worker accommodation, educational facilities, and healthcare campus concepts. The site follows Amoda's solution-first structure, broad architectural hero, consultation calls to action, rounded cards, and project process. Reference specifications come from the supplied Fjäll deck. Type 36 visuals have been enhanced from those references, while worker, school, and hospital-support images are new AI-generated concepts. None are completed-project claims or assets copied from Amoda.
+FAD is presented as a scalable building solution for residential housing, worker accommodation, educational facilities, and healthcare campus concepts. The site follows Amoda's solution-first structure, broad architectural hero, consultation calls to action, rounded cards, and project process. Reference specifications come from the supplied Fjäll deck. Residential, worker accommodation, school, and healthcare-support visuals are rendered architectural scale-model studies. None are completed-project claims or assets copied from Amoda.
 
 Type 36 is a documented reference example, not the entire FAD offering. Its exterior choices, illustrative room-zoning diagram, and material specification remain available further down the page. The programme planner captures quantities without publishing a unit price. Every configuration requires its own project specification and proposal. The floor plan is a discussion illustration, not an approved construction drawing.
 
@@ -113,3 +113,9 @@ To update renderer source, run `npm ci --cache /tmp/fad-npm-cache` and `npm run 
 FAD R presents three selectable residential sizes (18 / 36 / 72 m²), with an architectural family illustration and individual diagrams. The 36 m² specification remains based on the commercial-deck reference; 18 and 72 m² are conceptual zoning and specification briefs pending architectural, engineering, and site review. Size selection carries into the bilingual enquiry without discarding the visitor’s notes. The opening film includes the uploaded transparent Fjäll Group endorsement.
 
 The FAD R selector now uses individual optimized architectural renders. All three plans are Indonesian housing adaptations with separate wet areas, door swings, windows, furniture, and external terraces; they are concept drawings, not approved construction documents. The material specification for the 36 m² option remains identified as the original deck reference.
+
+## Architectural mockups
+
+All website building imagery is now rendered from authored Three.js geometry: housing 18/36/72, residential family, development hero, finishes, workers, school, and healthcare-support facilities. Each product gallery includes an exterior, open structural shell, roof-off interior shell, and linear/L-shaped/courtyard massing studies alongside the plan and specification. Different massing shapes do not imply equal floor areas or confirmed capacity. All models remain illustrative project concepts. The film and WebGPU scene use modeled geometric foliage, with no photographic or generated textures. The supplied commercial PDF and Fjäll Group logo remain original source materials.
+
+To regenerate stills, run `npx esbuild scripts/mockups/scene.js --bundle --format=esm --minify --outfile=scripts/mockups/scene-bundle.js`, start the dev server on port 5173, then run `node scripts/mockups/render.mjs`. Chromium and FFmpeg are authoring tools only. The generated authoring bundle is ignored by Git; source geometry and the rendered assets are checked in. See the renderer and video authoring instructions above to regenerate the continuous orbit.

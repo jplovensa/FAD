@@ -4,7 +4,7 @@ export function mountResidential({t,text,onChange}) {
  const plan=section.querySelector('#view-plan'),spec=section.querySelector('#view-specification');
  const baseline={spec:spec.innerHTML};
  let size=36;
- function translate(){section.querySelectorAll('[data-i18n]').forEach(el=>el.textContent=t(el.dataset.i18n));section.querySelectorAll('[data-aria]').forEach(el=>el.setAttribute('aria-label',t(el.dataset.aria)));section.querySelectorAll('[data-alt]').forEach(el=>el.alt=t(el.dataset.alt));}
+ function translate(){section.querySelectorAll('[data-mockup-home]').forEach(img=>img.alt=`FAD R ${size} — ${t('mock'+img.dataset.mockupHome+'Alt')}`);section.querySelectorAll('[data-i18n]').forEach(el=>el.textContent=t(el.dataset.i18n));section.querySelectorAll('[data-aria]').forEach(el=>el.setAttribute('aria-label',t(el.dataset.aria)));section.querySelectorAll('[data-alt]').forEach(el=>el.alt=t(el.dataset.alt));}
  function choose(value){
   size=value;
   section.querySelectorAll('[data-residential]').forEach(button=>{button.setAttribute('aria-pressed',String(Number(button.dataset.residential)===size));});
@@ -17,6 +17,7 @@ export function mountResidential({t,text,onChange}) {
   section.querySelector('#finish-controls').dataset.concept=String(size!==36);
   plan.innerHTML=drawResidentialPlan(size,{t,text});
   spec.innerHTML=size===36?baseline.spec:`<p class="eyebrow">FAD R ${size}</p><h3>${text('rSpecTitle')}</h3><p>${text('rSpecText')}</p><table class="spec-table"><tbody>${[['rConfig',`r${size}Config`],['rSystem','rSystemText'],['rSite','rSiteText'],['rServices','rServicesText'],['rFinishes','rFinishesText'],['rDelivery','rDeliveryText']].map(([key,value])=>`<tr><th scope="row">${text(key)}</th><td>${text(value)}</td></tr>`).join('')}</tbody></table>`;
+  section.querySelectorAll('[data-mockup-home]').forEach(img=>img.src=`./public/images/residential/fad-r-${size}-${img.dataset.mockupHome}.webp`);
   translate();onChange(size);
  }
  const buttons=[...section.querySelectorAll('[data-residential]')];
