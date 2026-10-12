@@ -208,12 +208,12 @@ test('government form qualifies and reviews a bilingual public-sector enquiry',a
  await page.goto('./');await expect(page.locator('#technology')).toHaveCount(0);await expect(page.locator('a[href="#technology"]')).toHaveCount(0);
  await page.locator('[data-government-use=govEducation]').click();await expect(page.locator('[name=govProgramme]')).toHaveValue('govEducation');
  await page.locator('.government-submit').click();await expect(page.locator('#review-dialog')).not.toBeVisible();
- const fields={govName:'Public Partner',govAgency:'Dinas Pendidikan',govEmail:'partner@example.go.id',govPhone:'+628123456789',govLocation:'Bandung',govScale:'20 classrooms',govFunding:'Public capital programme',govNote:'Need drawings & site review <before> procurement.'};
+ const fields={govName:'Public Partner',govAgency:'Dinas Pendidikan',govEmail:'partner@example.go.id',govPhone:'+628123456789',govLocation:'Bandung',govScale:'20 classrooms',govFunding:'Public capital programme',govCapacity:'240 students',govArea:'2000 m², one storey',govUtilities:'Water and power ready; drainage review needed',govRequirements:'Accessible routes and fire-safety review',govNote:'Need drawings & site review <before> procurement.'};
  for(const[name,value]of Object.entries(fields))await page.locator(`[name=${name}]`).fill(value);
  await page.locator('[name=govStage]').selectOption('govTender');await page.locator('[name=govTimeline]').selectOption('timeline3');await page.locator('[name=govLand]').selectOption('govSiteReady');await page.locator('[name=govYear]').fill('2027');await page.locator('[name=govConsent]').check();
  await page.getByRole('button',{name:'Bahasa Indonesia',exact:true}).click();await expect(page.locator('[name=govAgency]')).toHaveValue('Dinas Pendidikan');
  await page.locator('.government-submit').click();await expect(page.locator('#review-dialog')).toBeVisible();await expect(page.locator('#project-brief')).toContainText('PERTANYAAN PROYEK PEMERINTAH');await expect(page.locator('#project-brief')).toContainText('Sekolah & pendidikan');await expect(page.locator('#project-brief')).toContainText('Persiapan pengadaan / tender');
- const url=new URL(await page.locator('#send-whatsapp').getAttribute('href'));expect(url.origin+url.pathname).toBe('https://wa.me/6281237535508');expect(url.searchParams.get('text')).toContain(fields.govNote);expect(url.searchParams.get('text')).toContain('2027');expect(await page.locator('#project-brief script').count()).toBe(0);
+ const url=new URL(await page.locator('#send-whatsapp').getAttribute('href'));expect(url.origin+url.pathname).toBe('https://wa.me/6281237535508');for (const key of ['govNote','govCapacity','govArea','govUtilities','govRequirements']) expect(url.searchParams.get('text')).toContain(fields[key]);expect(url.searchParams.get('text')).toContain('2027');expect(await page.locator('#project-brief script').count()).toBe(0);
  await page.keyboard.press('Escape');await expect(page.locator('[name=govScale]')).toHaveValue('20 classrooms');
 });
 test('government phone validation rejects non-phone input',async({page})=>{
@@ -237,4 +237,15 @@ test('FAD in Motion progresses from a home to facilities with accessible control
 test('FAD in Motion retains a film if GPU rendering is unavailable',async({page})=>{
  await page.addInitScript(()=>{const original=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(type,...args){return /webgl|webgpu/.test(type)?null:original.call(this,type,...args);};});
  await page.goto('./');const player=page.locator('.motion-player');await player.scrollIntoViewIfNeeded();await expect(player).toHaveAttribute('data-backend','video',{timeout:20000});await expect(player.locator('video')).toBeVisible();await expect(player.locator('.motion-controls')).not.toBeVisible();
+});
+
+test('contact campus respects reduced motion and offers bilingual playback controls', async ({page}) => {
+ await page.goto('./');const campus=page.locator('.contact-illustration');await campus.scrollIntoViewIfNeeded();
+ await expect(campus).toHaveClass(/is-paused/);await expect(campus.locator('svg')).toBeVisible();
+ await expect(campus.locator('button')).toHaveText('Play illustration');
+ await campus.locator('button').click();await expect(campus).not.toHaveClass(/is-paused/);
+ await expect.poll(()=>campus.locator('.campus-building').first().evaluate(el=>getComputedStyle(el).animationPlayState)).toBe('running');
+ await page.getByRole('button',{name:'Bahasa Indonesia',exact:true}).click();await expect(campus.locator('button')).toHaveText('Jeda ilustrasi');
+ await campus.locator('button').click();await expect(campus.locator('button')).toHaveText('Putar ilustrasi');
+ await expect(page.locator('.gov-process li')).toHaveCount(4);await expect(page.locator('.gov-fieldset')).toHaveCount(3);
 });
