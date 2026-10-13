@@ -41,7 +41,7 @@ test('a complete enquiry produces a review and an encoded WhatsApp brief without
   await expect(page.locator('#review-dialog')).toBeVisible();
   await expect(page.locator('#project-brief')).toContainText('Program pemerintah & sektor publik');
   const destination = new URL(await page.locator('#send-whatsapp').getAttribute('href'));
-  expect(destination.origin + destination.pathname).toBe('https://wa.me/6281237535508');
+  expect(destination.origin + destination.pathname).toBe('https://wa.me/6287786010290');
   expect(destination.searchParams.get('text')).toContain(fields.message);
   expect(destination.searchParams.get('text')).toContain('Bahasa pilihan: Bahasa Indonesia');
   expect(await page.locator('#project-brief script').count()).toBe(0);
@@ -210,7 +210,7 @@ test('government form qualifies and reviews a bilingual public-sector enquiry',a
  await page.locator('[name=govStage]').selectOption('govTender');await page.locator('[name=govTimeline]').selectOption('timeline3');await page.locator('[name=govLand]').selectOption('govSiteReady');await page.locator('[name=govYear]').fill('2027');await page.locator('[name=govConsent]').check();
  await page.getByRole('button',{name:'Bahasa Indonesia',exact:true}).click();await expect(page.locator('[name=govAgency]')).toHaveValue('Dinas Pendidikan');
  await page.locator('.government-submit').click();await expect(page.locator('#review-dialog')).toBeVisible();await expect(page.locator('#project-brief')).toContainText('PERTANYAAN PROYEK PEMERINTAH');await expect(page.locator('#project-brief')).toContainText('Sekolah & pendidikan');await expect(page.locator('#project-brief')).toContainText('Persiapan pengadaan / tender');
- const url=new URL(await page.locator('#send-whatsapp').getAttribute('href'));expect(url.origin+url.pathname).toBe('https://wa.me/6281237535508');for (const key of ['govNote','govCapacity','govArea','govUtilities','govRequirements']) expect(url.searchParams.get('text')).toContain(fields[key]);expect(url.searchParams.get('text')).toContain('2027');expect(await page.locator('#project-brief script').count()).toBe(0);
+ const url=new URL(await page.locator('#send-whatsapp').getAttribute('href'));expect(url.origin+url.pathname).toBe('https://wa.me/6287786010290');for (const key of ['govNote','govCapacity','govArea','govUtilities','govRequirements']) expect(url.searchParams.get('text')).toContain(fields[key]);expect(url.searchParams.get('text')).toContain('2027');expect(await page.locator('#project-brief script').count()).toBe(0);
  await page.keyboard.press('Escape');await expect(page.locator('[name=govScale]')).toHaveValue('20 classrooms');
 });
 test('government phone validation rejects non-phone input',async({page})=>{

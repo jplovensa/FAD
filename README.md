@@ -54,7 +54,7 @@ Design reference: https://www.amoda.id/. Its page content was reviewed; external
 
 ## Lead enquiries
 
-The form qualifies enquiries by organisation, location, project type, number of units, timeline, and additional requirements. It validates required fields and consent, then shows a project brief. Visitors continue to WhatsApp and send the prepared message to **+62 812 3753 5508**, the contact number in the deck. Messages are not automatically sent. No enquiry data is stored by this website. Only the language preference is stored locally; the opening film replays on each page load and refresh.
+The form qualifies enquiries by organisation, location, project type, number of units, timeline, and additional requirements. It validates required fields and consent, then shows a project brief. Visitors continue to WhatsApp and send the prepared message to **+62 877 8601 0290**, the current project contact number. Messages are not automatically sent. No enquiry data is stored by this website. Only the language preference is stored locally; the opening film replays on each page load and refresh.
 
 This is a WhatsApp enquiry workflow, not a CRM/database integration. Contact routing is in `src/main.js`. Both language versions are in `src/content.js`. The bilingual privacy explanation is in the footer.
 
