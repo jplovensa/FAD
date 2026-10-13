@@ -25,12 +25,6 @@ export function mountResidential({t,text,onChange}) {
   button.addEventListener('click',()=>choose(Number(button.dataset.residential)));
   button.addEventListener('keydown',e=>{let next=index;if(e.key==='ArrowRight'||e.key==='ArrowDown')next=(index+1)%buttons.length;else if(e.key==='ArrowLeft'||e.key==='ArrowUp')next=(index+buttons.length-1)%buttons.length;else if(e.key==='Home')next=0;else if(e.key==='End')next=buttons.length-1;else return;e.preventDefault();buttons[next].focus();choose(Number(buttons[next].dataset.residential));});
  });
- section.querySelector('.residential-enquiry').addEventListener('click',()=>{
-  const input=document.querySelector('[name=message]');
-  const line=`${t('rSelectedBrief')}: FAD R ${size} — ${size} m²`;
-  // Keep the current selection in the brief while preserving the user's own text.
-  input.value=[input.value.replace(/^.*: FAD R (18|36|72) — .*m²\n?/gm,'').trim(),line].filter(Boolean).join('\n');
- });
  document.addEventListener('fad-language-change',translate);
  choose(36);
 }

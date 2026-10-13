@@ -25,16 +25,8 @@ test('government CTA qualifies the project and required fields prevent an empty 
   expect(await page.locator('#lead-form').evaluate(form => form.checkValidity())).toBe(false);
 });
 
-test('programme planner carries its scale into the enquiry without a price', async ({ page }) => {
-  await page.goto('./');
-  await page.getByRole('button', { name: '500', exact: true }).click();
-  await expect(page.locator('#budget-total')).toHaveText('500');
-  await page.locator('#budget-enquiry').click();
-  await expect(page.locator('[name=units]')).toHaveValue('500');
-  await page.locator('#budget-units').fill('0');
-  await page.locator('#budget-units').blur();
-  await expect(page.locator('#budget-units')).toHaveValue('1');
-  await expect(page.locator('#units-minus')).toBeDisabled();
+test('single enquiry owns quantity and optional housing estimate',async({page})=>{
+ await page.goto('./');await expect(page.locator('#budget')).toHaveCount(0);await expect(page.locator('[name=units]')).toHaveCount(1);await page.locator('[data-enquiry-type=r36]').click();await page.locator('[name=units]').fill('500');await expect(page.locator('.enquiry-area')).toContainText('18,000 m²');await page.locator('[name=units]').fill('0');expect(await page.locator('[name=units]').evaluate(el=>el.checkValidity())).toBe(false);await page.locator('.enquiry-clear').click();await expect(page.locator('[name=fadType]')).toHaveValue('');
 });
 
 test('a complete enquiry produces a review and an encoded WhatsApp brief without sending', async ({ page }) => {
@@ -129,7 +121,7 @@ test('the website leads with multiple solutions and uses Inter throughout', asyn
   expect(await page.evaluate(() => [...document.querySelectorAll('body *:not(source)')].map(el => getComputedStyle(el).fontFamily.split(',')[0].trim().replaceAll('"', '')).filter(font => font !== 'Inter'))).toEqual([]);
   await page.locator('#applications [data-project=sectorEdu]').click();
   await expect(page.locator('[name=sector]')).toHaveValue('sectorEdu');
-  await expect(page.locator('#budget')).toContainText('there is no universal unit price');
+  await expect(page.locator('#budget')).toHaveCount(0);
   await page.getByRole('button', { name: 'Bahasa Indonesia', exact: true }).click();
   await expect(page.locator('.hero')).not.toContainText('Tipe 36');
   await expect(page.locator('#applications')).toContainText('Pendidikan & pembelajaran');
@@ -178,7 +170,7 @@ for (const [key,sector,title] of [['workers','sectorCorp','Worker accommodation.
   await page.locator('[name=message]').fill('Existing site brief');
   await section.locator('[data-application]').click();
   await expect(page.locator('[name=sector]')).toHaveValue(sector);
-  await expect(page.locator('[name=message]')).toHaveValue('Existing site brief\n'+title);
+  await expect(page.locator('[name=message]')).toHaveValue('Existing site brief');
   await page.getByRole('button',{name:'Bahasa Indonesia',exact:true}).click();
   await expect(section.getByRole('tab',{name:'Spesifikasi proyek',exact:true})).toHaveAttribute('aria-selected','true');
   await expect(section.locator('.spec-table')).toContainText('Lingkup & persetujuan');
@@ -269,11 +261,11 @@ test('FAD R designs switch views and carry the selected size into the bilingual 
  }
  await page.locator('[data-residential="18"]').focus();await page.keyboard.press('End');await expect(page.locator('[data-residential="72"]')).toBeFocused();
  await page.locator('[name=message]').fill('Need a phased community.');
- await page.locator('.residential-enquiry').click();await expect(page.locator('[name=message]')).toHaveValue(/FAD R 72 — 72 m²/);
+ await page.locator('.residential-enquiry').click();await expect(page.locator('[name=fadType]')).toHaveValue(/FAD R72/);
  await expect(page.locator('[name=message]')).toHaveValue(/Need a phased community\./);
  await page.getByRole('button',{name:'Bahasa Indonesia',exact:true}).click();await expect(page.locator('[data-residential="72"]')).toContainText('Ruang untuk bertumbuh');await expect(page.locator('.residential-code')).toHaveText('FAD R / 72');
  await page.locator('#tab-specification').click();await expect(page.locator('#view-specification')).toContainText('bukan spesifikasi konstruksi');
- await page.locator('[data-residential="18"]').click();await page.locator('.residential-enquiry').click();await expect(page.locator('[name=message]')).toHaveValue(/FAD R 18 — 18 m²/);await expect(page.locator('[name=message]')).not.toHaveValue(/FAD R 72/);
+ await page.locator('[data-residential="18"]').click();await page.locator('.residential-enquiry').click();await expect(page.locator('[name=fadType]')).toHaveValue(/FAD R18/);await expect(page.locator('[name=message]')).toHaveValue('Need a phased community.');
 });
 
 test('architectural mockup galleries show shells, cutaways and massing alternatives',async({page})=>{
@@ -301,10 +293,10 @@ test('hero images rotate with pause and bilingual controls',async({page})=>{
  await page.getByRole('button',{name:'Bahasa Indonesia',exact:true}).click();await expect(control).toHaveText('Putar gambar');
 });
 
-test('rebuilt development planner qualifies its brief and removes deck links',async({page})=>{
- await page.goto('./');await expect(page.locator('a[href*="commercial-deck"]')).toHaveCount(0);
- await page.locator('[data-planner-type=r72]').click();await page.locator('[data-units="50"]').click();await expect(page.locator('.planner-area')).toContainText('3,600 m²');
- await page.locator('#planner-location').fill('Bandung');await page.locator('#planner-timeline').selectOption('timeline3');await page.locator('#planner-stage').selectOption('govTender');await page.locator('#planner-route').selectOption('government');
- await page.locator('[name=message]').fill('Existing requirement.');await page.locator('#budget-enquiry').click();await expect(page.locator('[name=units]')).toHaveValue('50');await expect(page.locator('[name=location]')).toHaveValue('Bandung');await expect(page.locator('[name=timeline]')).toHaveValue('timeline3');await expect(page.locator('[name=sector]')).toHaveValue('sectorGov');await expect(page.locator('[name=message]')).toHaveValue(/Existing requirement\.[\s\S]*FAD R72/);
- await page.locator('[data-planner-type=school]').click();await expect(page.locator('.planner-area')).toContainText('project review');await page.getByRole('button',{name:'Bahasa Indonesia',exact:true}).click();await expect(page.locator('.planner-selected')).toContainText('Fasilitas pendidikan');await expect(page.locator('#planner-location')).toHaveValue('Bandung');await page.locator('#budget-enquiry').click();await expect(page.locator('[name=message]')).toHaveValue(/FAD E/);await expect(page.locator('[name=message]')).not.toHaveValue(/FAD R72/);
+test('consolidated enquiry preserves the project and reviews the chosen design once',async({page})=>{
+ await page.goto('./');await expect(page.locator('a[href*="commercial-deck"]')).toHaveCount(0);await expect(page.locator('[name=location]')).toHaveCount(1);await expect(page.locator('[name=timeline]')).toHaveCount(1);
+ await page.locator('[data-enquiry-type=r72]').click();await page.locator('[name=units]').fill('50');await expect(page.locator('.enquiry-area')).toContainText('3,600 m²');
+ const fields={name:'Project Partner',org:'Public Agency',email:'partner@example.com',phone:'+62812345678',location:'Bandung',message:'Existing requirement.'};for(const [key,value]of Object.entries(fields))await page.locator(`[name=${key}]`).fill(value);await page.locator('[name=timeline]').selectOption('timeline3');await page.locator('[name=sector]').selectOption('sectorGov');
+ await page.locator('[data-enquiry-type=school]').click();await expect(page.locator('[name=sector]')).toHaveValue('sectorGov');await expect(page.locator('.enquiry-area')).toContainText('not residents, students, or beds');
+ await page.getByRole('button',{name:'Bahasa Indonesia',exact:true}).click();await expect(page.locator('[name=location]')).toHaveValue('Bandung');await expect(page.locator('[name=message]')).toHaveValue('Existing requirement.');await page.locator('[name=consent]').check();await page.locator('.form-submit').click();await expect(page.locator('#project-brief')).toContainText('FAD E');await expect(page.locator('#project-brief')).not.toContainText('FAD R72');await expect(page.locator('#project-brief')).toContainText('Existing requirement.');
 });
