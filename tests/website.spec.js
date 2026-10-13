@@ -140,6 +140,11 @@ test('video intro fills the screen, can be skipped, and replays on refresh', asy
  await expect(page.locator('#app')).toHaveJSProperty('inert',true);
  expect(await page.locator('.video-intro video').evaluate(el=>getComputedStyle(el).objectFit)).toBe('cover');
  const bounds=await page.locator('.video-intro').boundingBox();const viewport=page.viewportSize();expect(bounds.width).toBe(viewport.width);expect(bounds.height).toBe(viewport.height);
+ await expect(page.locator('.intro-story h2')).toHaveText('Built around people.');
+ await page.locator('.video-intro video').evaluate(video=>{video.playbackRate=4;});
+ await expect(page.locator('.intro-story h2')).toHaveText('Repeatable by design.');
+ await expect(page.locator('.intro-story h2')).toHaveText('Ready for scale.');
+ await page.locator('.video-intro video').evaluate(video=>video.pause());
  await page.locator('.intro-skip').click();await expect(page.locator('.video-intro')).toHaveCount(0);await expect(page.locator('#app')).toHaveJSProperty('inert',false);
  await page.reload();await expect(page.locator('.video-intro')).toBeVisible();await page.keyboard.press('Escape');await expect(page.locator('.video-intro')).toHaveCount(0);
 });

@@ -182,6 +182,13 @@ if (!reduceMotion && !navigator.connection?.saveData) {
  intro.innerHTML = `<video muted playsinline preload="auto" poster="./public/video/${stem}-poster.jpg" aria-hidden="true"><source src="./public/video/${stem}.mp4" type="video/mp4"></video><div class="intro-shade"></div><div class="intro-brand">${logo}<strong><img class="fad-wordmark" src="./public/brand/fad-wordmark-reverse.svg" alt="FAD"></strong><p>${t('brandSub')}</p></div><div class="intro-group"><span>${t('preloaderBy')}</span>${groupLogo}</div><div class="intro-story"><p class="eyebrow">${t('preloaderLabel')}</p><h2>${t('preloaderTitle')}</h2><p>${t('preloaderText')}</p><span>${t('preloaderNote')}</span></div><button class="intro-skip">${t('preloaderSkip')}${icon('arrow')}</button><div class="intro-progress"></div>`;
  document.body.append(intro); app.inert = true; document.body.classList.add('intro-open');
  const video = intro.querySelector('video'); const skip = intro.querySelector('button');
+ const chapterTitle = intro.querySelector('.intro-story h2');
+ const chapters = ['preloaderTitle', 'preloaderCommunity', 'preloaderScale'];
+ let chapter = 0;
+ video.addEventListener('timeupdate', () => {
+  const next = Math.min(2, Math.floor(video.currentTime / 6));
+  if (next !== chapter) { chapter = next; chapterTitle.textContent = t(chapters[next]); }
+ });
  let closed = false;
  const dismiss = () => { if (closed) return; closed = true; clearTimeout(timer); video.pause(); intro.remove(); app.inert = false; document.body.classList.remove('intro-open'); document.removeEventListener('keydown', onKey); document.querySelector('.brand').focus({preventScroll:true}); };
  const onKey = e => { if (e.key === 'Escape') dismiss(); if (e.key === 'Tab') { e.preventDefault(); skip.focus(); } };
