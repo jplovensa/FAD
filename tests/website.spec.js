@@ -288,7 +288,7 @@ test('architectural mockup galleries show shells, cutaways and massing alternati
  }
  await page.locator('[data-residential="72"]').click();await page.locator('#tab-interior').click();await expect(page.locator('#view-interior img')).toHaveAttribute('src','./public/images/residential/fad-r-72-interior.webp');
  await page.locator('[data-residential="18"]').click();await expect(page.locator('#view-interior img')).toHaveAttribute('src','./public/images/residential/fad-r-18-interior.webp');
- await page.getByRole('button',{name:'Bahasa Indonesia',exact:true}).click();await expect(page.locator('#tab-interior')).toHaveText('Shell interior');await expect(page.locator('#view-interior')).toContainText('Model arsitektur tanpa atap');await expect(page.locator('#hospital-tab-variations')).toHaveText('Pilihan bentuk');
+ await page.getByRole('button',{name:'Bahasa Indonesia',exact:true}).click();await expect(page.locator('#tab-interior')).toHaveText('Shell interior');await expect(page.locator('#view-interior')).toContainText('Render konsep tanpa atap');await expect(page.locator('#hospital-tab-variations')).toHaveText('Pilihan bentuk');
 });
 
 test('hero images rotate with pause and bilingual controls',async({page})=>{

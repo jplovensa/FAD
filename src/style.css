@@ -109,3 +109,5 @@ body{background:#f5f4ed}.header,.footer,.government{background:#193a32}.brand{ga
 .intro-group{background:transparent;border:0;backdrop-filter:none;box-shadow:none;padding:0;border-radius:0}.intro-group .group-logo{filter:none}.hero-end .group-logo,.footer-group .group-logo{background:transparent;box-shadow:none}
 @media(max-width:760px){.hero-motion-toggle{left:20px;bottom:14px;font-size:9px;padding:8px 12px}.hero-concept{max-width:160px;text-align:right}}
 @media(prefers-reduced-motion:reduce){.hero-visual>.hero-image{transition:none}.hero-visual>.hero-image.is-active{animation:none;transform:none}}
+/* Keep realistic cutaway proportions intact, without cropping room divisions. */
+#view-interior>img,[id$="-view-interior"]>img{aspect-ratio:auto;height:auto;object-fit:contain}
