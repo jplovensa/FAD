@@ -300,3 +300,11 @@ test('hero images rotate with pause and bilingual controls',async({page})=>{
  const current=await hero.getAttribute('data-hero-slide');await page.waitForTimeout(7000);await expect(hero).toHaveAttribute('data-hero-slide',current);
  await page.getByRole('button',{name:'Bahasa Indonesia',exact:true}).click();await expect(control).toHaveText('Putar gambar');
 });
+
+test('rebuilt development planner qualifies its brief and removes deck links',async({page})=>{
+ await page.goto('./');await expect(page.locator('a[href*="commercial-deck"]')).toHaveCount(0);
+ await page.locator('[data-planner-type=r72]').click();await page.locator('[data-units="50"]').click();await expect(page.locator('.planner-area')).toContainText('3,600 m²');
+ await page.locator('#planner-location').fill('Bandung');await page.locator('#planner-timeline').selectOption('timeline3');await page.locator('#planner-stage').selectOption('govTender');await page.locator('#planner-route').selectOption('government');
+ await page.locator('[name=message]').fill('Existing requirement.');await page.locator('#budget-enquiry').click();await expect(page.locator('[name=units]')).toHaveValue('50');await expect(page.locator('[name=location]')).toHaveValue('Bandung');await expect(page.locator('[name=timeline]')).toHaveValue('timeline3');await expect(page.locator('[name=sector]')).toHaveValue('sectorGov');await expect(page.locator('[name=message]')).toHaveValue(/Existing requirement\.[\s\S]*FAD R72/);
+ await page.locator('[data-planner-type=school]').click();await expect(page.locator('.planner-area')).toContainText('project review');await page.getByRole('button',{name:'Bahasa Indonesia',exact:true}).click();await expect(page.locator('.planner-selected')).toContainText('Fasilitas pendidikan');await expect(page.locator('#planner-location')).toHaveValue('Bandung');await page.locator('#budget-enquiry').click();await expect(page.locator('[name=message]')).toHaveValue(/FAD E/);await expect(page.locator('[name=message]')).not.toHaveValue(/FAD R72/);
+});
