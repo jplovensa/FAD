@@ -1,3 +1,4 @@
+import { mountHeroMotion } from './hero-motion.js';
 import { mountResidential } from './residential.js';
 import { content } from './content.js';
 import { mountWebGLIcons } from './webgl.js';
@@ -44,7 +45,7 @@ app.innerHTML = `
 <main id="main">
 <section class="hero container">
  <div class="hero-copy"><p class="eyebrow"><span class="status-dot"></span>${text('heroEyebrow')}</p><h1>${text('heroTitle')}<em>${text('heroAccent')}</em></h1><p class="hero-description">${text('heroDescription')}</p><div class="hero-buttons"><a class="button" href="#contact">${text('heroCta')}${icon('diagonal')}</a><a class="text-link" href="#applications">${text('heroSecondary')}${arrow}</a></div><div class="hero-end">${groupLogo}<span class="mini-emblem">${icon('home')}</span><span>${text('heroTag')}</span><span class="hero-line"></span></div></div>
- <div class="hero-visual"><img class="hero-image" src="./public/images/campus.jpg" alt="${t('heroImageAlt')}" data-alt="heroImageAlt" fetchpriority="high"><span class="hero-concept">${text('heroCaption')}</span></div>
+ <div class="hero-visual"><img class="hero-image is-active" src="./public/images/campus.jpg" alt="" aria-hidden="true" fetchpriority="high"><img class="hero-image" src="./public/images/campus.jpg" alt="" aria-hidden="true" loading="lazy"><span class="hero-concept">${text('heroCaption')}</span></div><button type="button" class="hero-motion-toggle" aria-pressed="false">${text('heroMotionPause')}</button>
 </section>
 <section class="metrics container" aria-label="Development solutions">${['home','building','grid','layers'].map((i,n)=>`<div class="metric"><span class="metric-icon">${icon(i)}</span><strong>${text('capability'+(n+1))}</strong><p>${text('capability'+(n+1)+'Text')}</p></div>`).join('')}</section>
 <section class="applications section container" id="applications"><div class="section-intro"><div><p class="eyebrow">${text('appLabel')}</p><h2>${text('appTitle')}<em>${text('appAccent')}</em></h2></div><p class="application-intro">${text('appText')}</p></div><div class="application-grid">${['residential/fad-r-36-render.webp','school-concept.jpg','workers-concept.jpg','hospital-concept.jpg'].map((img,n)=>`<article class="application-card"><div class="application-image"><img src="./public/images/${img}" alt="${t('app'+(n+1))} — ${t('concept')}" data-app-alt="${n+1}" loading="lazy"><span>0${n+1}</span></div><div class="application-content"><p class="eyebrow">${text('app'+(n+1)+'Tag')}</p><h3>${text('app'+(n+1))}</h3><p>${text('app'+(n+1)+'Text')}</p><a class="text-link" href="#contact" data-project="${['sectorDev','sectorEdu','sectorCorp','sectorHealth'][n]}">${text('appCta')}${icon('diagonal')}</a><a class="application-explore" href="#${['solution','school','workers','hospital'][n]}">${text('app'+(n+1)+'Jump')}${arrow}</a></div></article>`).join('')}</div><p class="fine-print">${text('appNote')}</p></section>
@@ -234,3 +235,5 @@ campusToggle.addEventListener('click', () => { campusPaused = !campusPaused; set
 matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', e => { campusPaused = e.matches; setCampusMotion(); });
 new IntersectionObserver(entries => { campus.classList.toggle('is-offscreen', !entries[0].isIntersecting); }).observe(campus);
 setCampusMotion();
+
+mountHeroMotion(t);

@@ -476,7 +476,9 @@ export const content = {
     "r72CoverAlt": "FAD R72 three-bedroom family-home concept with a hip roof, shaded terrace, and elongated footprint",
     "workersCoverAlt": "Worker accommodation concept with industrial-style room wings, covered paths, and communal services",
     "schoolCoverAlt": "School campus concept with classroom roof bays, covered verandas, and an outdoor learning courtyard",
-    "hospitalCoverAlt": "Healthcare support campus concept with flat-roof civic blocks and a sheltered accessible arrival"
+    "hospitalCoverAlt": "Healthcare support campus concept with flat-roof civic blocks and a sheltered accessible arrival",
+    "heroMotionPause": "Pause images",
+    "heroMotionPlay": "Play images"
   },
   "id": {
     "skip": "Langsung ke konten",
@@ -955,6 +957,8 @@ export const content = {
     "r72CoverAlt": "Konsep hunian keluarga tiga kamar FAD R72 dengan atap perisai, teras teduh, dan tapak memanjang",
     "workersCoverAlt": "Konsep akomodasi pekerja dengan sayap hunian bergaya industri, jalur beratap, dan servis bersama",
     "schoolCoverAlt": "Konsep kampus sekolah dengan modul atap ruang kelas, selasar beratap, dan halaman belajar",
-    "hospitalCoverAlt": "Konsep kampus pendukung kesehatan dengan bangunan atap datar dan area kedatangan teduh yang aksesibel"
+    "hospitalCoverAlt": "Konsep kampus pendukung kesehatan dengan bangunan atap datar dan area kedatangan teduh yang aksesibel",
+    "heroMotionPause": "Jeda gambar",
+    "heroMotionPlay": "Putar gambar"
   }
 };

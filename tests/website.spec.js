@@ -220,7 +220,7 @@ test('government phone validation rejects non-phone input',async({page})=>{
  await page.goto('./');await page.locator('[name=govPhone]').fill('abcdefghi');expect(await page.locator('[name=govPhone]').evaluate(el=>el.checkValidity())).toBe(false);await page.locator('[name=govPhone]').fill('+62812345678');expect(await page.locator('[name=govPhone]').evaluate(el=>el.checkValidity())).toBe(true);
 });
 test('video intro chooses the portrait film on mobile',async({page})=>{
- await page.setViewportSize({width:390,height:844});await page.goto('./');await expect(page.locator('.video-intro source')).toHaveAttribute('src','./public/video/fad-opening-portrait.mp4');await expect(page.locator('.video-intro')).toBeVisible();await expect(page.locator('.intro-group img')).toHaveAttribute('src','./public/brand/fjall-group.png');await expect(page.locator('.intro-group')).toBeVisible();await page.locator('.intro-skip').click();await expect(page.locator('.video-intro')).toHaveCount(0);
+ await page.setViewportSize({width:390,height:844});await page.goto('./');await expect(page.locator('.video-intro source')).toHaveAttribute('src','./public/video/fad-opening-portrait.mp4');await expect(page.locator('.video-intro')).toBeVisible();await expect(page.locator('.intro-group img')).toHaveAttribute('src','./public/brand/fjall-group.png');await expect(page.locator('.intro-group')).toBeVisible();expect(await page.locator('.intro-group').evaluate(el=>getComputedStyle(el).backgroundColor)).toBe('rgba(0, 0, 0, 0)');await page.locator('.intro-skip').click();await expect(page.locator('.video-intro')).toHaveCount(0);
 });
 
 test('FAD in Motion progresses from a home to facilities with accessible controls',async({page})=>{
@@ -289,4 +289,14 @@ test('architectural mockup galleries show shells, cutaways and massing alternati
  await page.locator('[data-residential="72"]').click();await page.locator('#tab-interior').click();await expect(page.locator('#view-interior img')).toHaveAttribute('src','./public/images/residential/fad-r-72-interior.webp');
  await page.locator('[data-residential="18"]').click();await expect(page.locator('#view-interior img')).toHaveAttribute('src','./public/images/residential/fad-r-18-interior.webp');
  await page.getByRole('button',{name:'Bahasa Indonesia',exact:true}).click();await expect(page.locator('#tab-interior')).toHaveText('Shell interior');await expect(page.locator('#view-interior')).toContainText('Model arsitektur tanpa atap');await expect(page.locator('#hospital-tab-variations')).toHaveText('Pilihan bentuk');
+});
+
+test('hero images rotate with pause and bilingual controls',async({page})=>{
+ await page.goto('./');const hero=page.locator('.hero'),control=page.locator('.hero-motion-toggle');
+ await expect(control).toHaveText('Play images');await expect(hero).toHaveAttribute('data-hero-slide','0');
+ await control.click();await expect(control).toHaveText('Pause images');
+ await expect(hero).toHaveAttribute('data-hero-slide','1',{timeout:12000});
+ await control.click();await expect(control).toHaveAttribute('aria-pressed','true');
+ const current=await hero.getAttribute('data-hero-slide');await page.waitForTimeout(7000);await expect(hero).toHaveAttribute('data-hero-slide',current);
+ await page.getByRole('button',{name:'Bahasa Indonesia',exact:true}).click();await expect(control).toHaveText('Putar gambar');
 });
