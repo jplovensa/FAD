@@ -179,18 +179,28 @@ if (!reduceMotion && !navigator.connection?.saveData) {
  const stem = portrait ? 'fad-opening-portrait' : 'fad-opening';
  const intro = document.createElement('div');
  intro.className = 'video-intro'; intro.setAttribute('role','dialog'); intro.setAttribute('aria-modal','true'); intro.setAttribute('aria-label', 'FAD introduction');
- intro.innerHTML = `<video muted playsinline preload="auto" poster="./public/video/${stem}-poster.jpg" aria-hidden="true"><source src="./public/video/${stem}.mp4" type="video/mp4"></video><div class="intro-shade"></div><div class="intro-brand">${logo}<strong><img class="fad-wordmark" src="./public/brand/fad-wordmark-reverse.svg" alt="FAD"></strong><p>${t('brandSub')}</p></div><div class="intro-group"><span>${t('preloaderBy')}</span>${groupLogo}</div><div class="intro-story"><p class="eyebrow">${t('preloaderLabel')}</p><h2>${t('preloaderTitle')}</h2><p>${t('preloaderText')}</p><span>${t('preloaderNote')}</span></div><button class="intro-skip">${t('preloaderSkip')}${icon('arrow')}</button><div class="intro-progress"></div>`;
+ intro.innerHTML = `<video muted playsinline preload="auto" poster="./public/video/${stem}-poster.jpg" aria-hidden="true"><source src="./public/video/${stem}.mp4" type="video/mp4"></video><div class="intro-shade"></div><div class="intro-brand">${logo}<strong><img class="fad-wordmark" src="./public/brand/fad-wordmark-reverse.svg" alt="FAD"></strong><p>${t('brandSub')}</p></div><div class="intro-group"><span>${t('preloaderBy')}</span>${groupLogo}</div><div class="intro-endmark" aria-hidden="true"><img src="./public/brand/fad-wordmark-reverse.svg" alt=""><span>${t('brandSub')}</span></div><div class="intro-story"><p class="eyebrow">${t('preloaderLabel')}</p><h2>${t('preloaderTitle')}</h2><p>${t('preloaderText')}</p><span>${t('preloaderNote')}</span></div><button class="intro-skip">${t('preloaderSkip')}${icon('arrow')}</button><span class="intro-chapter" aria-hidden="true">01 / 03</span><div class="intro-progress" role="progressbar" aria-label="${t('preloaderLabel')}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>`;
  document.body.append(intro); app.inert = true; document.body.classList.add('intro-open');
  const video = intro.querySelector('video'); const skip = intro.querySelector('button');
  const chapterTitle = intro.querySelector('.intro-story h2');
+ const progress = intro.querySelector('.intro-progress');
+ const chapterNumber = intro.querySelector('.intro-chapter');
  const chapters = ['preloaderTitle', 'preloaderCommunity', 'preloaderScale'];
  let chapter = 0;
  video.addEventListener('timeupdate', () => {
   const next = Math.min(2, Math.floor(video.currentTime / 6));
-  if (next !== chapter) { chapter = next; chapterTitle.textContent = t(chapters[next]); }
+  const percent = Math.min(100, video.currentTime / (video.duration || 18) * 100);
+  progress.style.transform = `scaleX(${percent / 100})`;
+  progress.setAttribute('aria-valuenow', String(Math.round(percent)));
+  intro.classList.toggle('is-finale', video.currentTime >= 15.5);
+  if (next !== chapter) {
+   chapter = next; chapterTitle.textContent = t(chapters[next]);
+   chapterNumber.textContent = `0${next + 1} / 03`;
+   chapterTitle.animate([{opacity:0,transform:'translateY(18px)'},{opacity:1,transform:'translateY(0)'}],{duration:1000,easing:'cubic-bezier(.2,.7,.2,1)'});
+  }
  });
  let closed = false;
- const dismiss = () => { if (closed) return; closed = true; clearTimeout(timer); video.pause(); intro.remove(); app.inert = false; document.body.classList.remove('intro-open'); document.removeEventListener('keydown', onKey); document.querySelector('.brand').focus({preventScroll:true}); };
+ const dismiss = () => { if (closed) return; closed = true; clearTimeout(timer); video.pause(); intro.classList.add('is-leaving'); document.removeEventListener('keydown', onKey); setTimeout(() => { intro.remove(); app.inert = false; document.body.classList.remove('intro-open'); document.querySelector('.brand').focus({preventScroll:true}); }, 600); };
  const onKey = e => { if (e.key === 'Escape') dismiss(); if (e.key === 'Tab') { e.preventDefault(); skip.focus(); } };
  const timer = setTimeout(dismiss, 19000);
  skip.addEventListener('click', dismiss); document.addEventListener('keydown',onKey); video.addEventListener('ended',dismiss); video.addEventListener('error',dismiss); video.querySelector('source').addEventListener('error',dismiss);

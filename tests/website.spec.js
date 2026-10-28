@@ -148,6 +148,26 @@ test('video intro fills the screen, can be skipped, and replays on refresh', asy
  await page.locator('.intro-skip').click();await expect(page.locator('.video-intro')).toHaveCount(0);await expect(page.locator('#app')).toHaveJSProperty('inert',false);
  await page.reload();await expect(page.locator('.video-intro')).toBeVisible();await page.keyboard.press('Escape');await expect(page.locator('.video-intro')).toHaveCount(0);
 });
+test('video intro reveal synchronises progress and ends on the FAD identity', async ({page}) => {
+ await page.goto('./');
+ const video = page.locator('.video-intro video');
+ await video.evaluate(el => { el.playbackRate = 4; });
+ await expect(page.locator('.intro-chapter')).toHaveText('02 / 03');
+ const percent = Number(await page.locator('.intro-progress').getAttribute('aria-valuenow'));
+ expect(percent).toBeGreaterThanOrEqual(33); expect(percent).toBeLessThan(67);
+ await expect(page.locator('.video-intro')).toHaveClass(/is-finale/);
+ await video.evaluate(el => el.pause());
+ await expect(page.locator('.intro-endmark')).toHaveCSS('opacity', '1');
+ await page.keyboard.press('Escape');
+ await expect(page.locator('.video-intro')).toHaveCount(0);
+ await expect(page.locator('.brand').first()).toBeFocused();
+});
+test('video intro failed media releases the page', async ({page}) => {
+ await page.route('**/video/fad-opening.mp4', route => route.abort());
+ await page.goto('./');
+ await expect(page.locator('.video-intro')).toHaveCount(0);
+ await expect(page.locator('#app')).toHaveJSProperty('inert', false);
+});
 test('reduced motion bypasses the intro', async ({page}) => {
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.goto('./'); await page.reload();
