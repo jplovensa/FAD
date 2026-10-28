@@ -24,7 +24,8 @@ export async function createFadScene(canvas,{forceWebGL=false,quality='high',cin
  const facilities=[facility(23,-5,3,'school'),facility(25,11,3,'workers'),facility(-3,29,4,'health')];
  // Geometric trees use authored meshes rather than photographic or generated textures.
  const treeGeometry=cinematic?new THREE.SphereGeometry(1,12,8):new THREE.IcosahedronGeometry(1,1);const trunkGeometry=new THREE.CylinderGeometry(.2,.3,4,6);
- for(let n=0;n<46;n++){const a=n/46*Math.PI*2,radius=42+(n%3)*5;const g=new THREE.Group();const trunk=new THREE.Mesh(trunkGeometry,materials.bark);trunk.position.y=2;trunk.castShadow=true;g.add(trunk);for(let i=0;i<3;i++){const leaf=new THREE.Mesh(treeGeometry,materials.leaves);leaf.position.set((i-1)*1.3,5+i%2,0);leaf.scale.set(2.3,2.7,2.3);leaf.castShadow=true;g.add(leaf);}g.position.set(Math.cos(a)*radius,0,Math.sin(a)*radius+8);g.scale.setScalar(.8+(n%4)*.15);scene.add(g);}
+ const trees=[];
+ for(let n=0;n<46;n++){const a=n/46*Math.PI*2,radius=42+(n%3)*5;const g=new THREE.Group();const trunk=new THREE.Mesh(trunkGeometry,materials.bark);trunk.position.y=2;trunk.castShadow=true;g.add(trunk);for(let i=0;i<3;i++){const leaf=new THREE.Mesh(treeGeometry,materials.leaves);leaf.position.set((i-1)*1.3,5+i%2,0);leaf.scale.set(2.3,2.7,2.3);leaf.castShadow=true;g.add(leaf);}g.position.set(Math.cos(a)*radius,0,Math.sin(a)*radius+8);g.scale.setScalar(.8+(n%4)*.15);scene.add(g);trees.push(g);}
  // Planting beds, shaded paths and facade details soften the repeatable plan.
  for(const g of homes){box(g,-2,.22,3.5,1.8,.4,.8,'concrete');box(g,-2,.55,3.5,1.7,.45,.7,'green');box(g,2.4,.22,3.3,.9,.4,.9,'concrete');box(g,2.4,.65,3.3,.8,.7,.8,'green');for(let i=0;i<5;i++)box(g,-2.7+i*.2,1.7,1.61,.05,2.7,.07,'wood');}
  const mountains=new THREE.Group();for(let n=0;n<12;n++){const mesh=new THREE.Mesh(new THREE.SphereGeometry(1,24,16),new THREE.MeshStandardMaterial({color:'#789782',roughness:1}));mesh.position.set(Math.sin(n)*130,-5,Math.cos(n)*130);mesh.scale.set(40,12+n%3*5,40);mountains.add(mesh);}scene.add(mountains);
@@ -40,14 +41,36 @@ export async function createFadScene(canvas,{forceWebGL=false,quality='high',cin
   // Small warm lights complement sunset rather than lighting the entire site uniformly.
   for(const home of homes){const light=new THREE.PointLight('#ffc785',2.5,7,2);light.position.set(home.position.x,2,home.position.z+1);scene.add(light);}
  }
+ // Continuous dolly-to-crane path, with a matching target spline. No full orbit,
+ // camera cuts, handheld jitter, or frame-dependent animation.
+ const cameraPath=new THREE.CatmullRomCurve3([
+  new THREE.Vector3(-14.8,2.8,13),new THREE.Vector3(-10,7,23),
+  new THREE.Vector3(16,21,48),new THREE.Vector3(51,40,69)
+ ]);
+ const focusPath=new THREE.CatmullRomCurve3([
+  new THREE.Vector3(-18,1.5,1),new THREE.Vector3(-15,1.5,4),
+  new THREE.Vector3(-5,1.5,9),new THREE.Vector3(0,2,12)
+ ]);
  async function renderTrailer(progress){
-  const p=clamp(progress,0,1);update(1,.65);let target,radius,height,angle;
-  if(p<1/3){const q=p*3;for(const home of homes)home.visible=home===hero;facilities.forEach(g=>g.visible=false);target=new THREE.Vector3(hero.position.x-.4,1.15,1.8);radius=10.5;height=2.4+q*.5;angle=.22+q*.42;}
-  else{const q=(p-1/3)*1.5;angle=.65+q*Math.PI*2;
-   if(p<2/3){const shot=(p-1/3)*3;target=new THREE.Vector3(-10,1.7,7);radius=26+smooth(0,1,shot)*16;height=10+smooth(0,1,shot)*8;}
-   else{const shot=(p-2/3)*3;target=new THREE.Vector3(0,1.8,10);radius=60+smooth(0,1,shot)*14;height=25+smooth(0,1,shot)*9;}}
-  camera.fov=44;camera.updateProjectionMatrix();camera.position.set(target.x+Math.sin(angle)*radius,height,target.z+Math.cos(angle)*radius);camera.lookAt(target);
-  if(worker){const walking=Math.min(p/.34,1),stride=p*18*5.5;worker.position.set(hero.position.x-1.9+walking*3.1,.02,4.4);worker.rotation.y=Math.PI/2;for(const {leg,arm,side}of joints){leg.rotation.x=walking<1?Math.sin(stride)*.35*side:0;arm.rotation.x=walking<1?-Math.sin(stride)*.27*side:0;}renderer.shadowMap.needsUpdate=true;sun.shadow.needsUpdate=true;}
+  const p=clamp(progress,0,1),seconds=p*18;
+  // Quintic easing brings the rig gently into motion and settles on the wide.
+  const travel=smooth(0,1,p);
+  camera.fov=camera.aspect<1?57:44;camera.updateProjectionMatrix();
+  camera.position.copy(cameraPath.getPoint(travel));camera.lookAt(focusPath.getPoint(travel));
+  // Modules settle into their plots as the camera reveals the development.
+  for(let n=0;n<homes.length;n++){
+   const g=homes[n],reveal=g===hero?1:smooth(.15+n*.018,.32+n*.018,p);
+   g.visible=reveal>0;g.scale.y=1;g.position.y=-(1-reveal)*3.6;
+  }
+  facilities.forEach((g,n)=>{const reveal=smooth(.48+n*.045,.67+n*.045,p);g.visible=reveal>0;g.scale.y=1;g.position.y=-(1-reveal)*3.6;});
+  // A very small breeze, offset per tree, gives the locked geometry natural life.
+  trees.forEach((g,n)=>{g.rotation.z=Math.sin(seconds*.85+n*1.7)*.006;g.rotation.x=Math.sin(seconds*.6+n)*.003;});
+  if(worker){
+   const walking=smooth(0,5,seconds),stride=seconds*5.2,amplitude=1-smooth(4,5,seconds);
+   worker.position.set(hero.position.x-1.9+walking*2.4,.02+Math.abs(Math.sin(stride))*.025*amplitude,4.4);worker.rotation.y=Math.PI/2;
+   for(const {leg,arm,side}of joints){leg.rotation.x=Math.sin(stride)*.28*side*amplitude;arm.rotation.x=-Math.sin(stride)*.2*side*amplitude;}
+  }
+  renderer.shadowMap.needsUpdate=true;sun.shadow.needsUpdate=true;
   renderer.render(scene,camera);if(renderer.backend.isWebGPUBackend)await renderer.backend.device.queue.onSubmittedWorkDone();
  }
  let width=1280,height=720,lastShadowProgress=-1;

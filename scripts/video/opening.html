@@ -1,4 +1,4 @@
 <!doctype html><html><head><style>body{margin:0}canvas{display:block}</style></head><body><canvas id="scene" width="1280" height="720"></canvas><script type="module">
 import{createFadScene}from'../../public/vendor/fad-scene.js';
-window.fadScene=await createFadScene(document.querySelector('canvas'),{quality:'low',forceWebGL:true,cinematic:true});await window.fadScene.renderTrailer(0);window.fadReady=true;
+window.fadScene=await createFadScene(document.querySelector('canvas'),{quality:'low',forceWebGL:true,cinematic:true});const portrait=new URLSearchParams(location.search).has('portrait');window.fadScene.resize(portrait?720:1280,portrait?1280:720);await window.fadScene.renderTrailer(0);window.fadReady=true;
 </script></body></html>
